@@ -10,7 +10,7 @@
 
 <!-- ═══ CONFIG — set this once you deploy code.gs (Deploy → Web app → copy /exec URL) ═══ -->
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycby1brc3q11WpOsqsfSemkVtY0y1iETjf7EGiu6TeZarigNNZIFJafU8PXxf1D2lLSQG/exec"; // e.g. "https://script.google.com/macros/s/AKfycb.../exec" — leave blank to use built-in demo content
+ const API_URL = "https://script.google.com/macros/s/AKfycbzHuKCz-UQdhRWzSXKznQR7f9IvT_FkMORGwa18KYSAJlnaw2potg6f_B8pkw_8T-KF/exec"; // e.g. "https://script.google.com/macros/s/AKfycb.../exec" — leave blank to use built-in demo content
 </script>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -97,7 +97,7 @@
 
   nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);transition:background .35s ease,border-color .35s ease}
   [data-theme="dark"] nav{background:rgba(15,17,21,.85)}
-  .nav-logo .crest{width:38px;height:38px;border-radius:10px;background:var(--ink);border:1px solid #2A2D38;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.72rem;color:#8FD19E;flex-shrink:0}
+  .nav-logo .crest{width:38px;height:38px;border-radius:10px;background:var(--ink);border:1px solid #2A2D38;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.72rem;color:#8FD19E;flex-shrink:0;overflow:hidden}
   .nav-links a{font-size:.88rem;font-weight:600;color:var(--body-text);font-family:var(--font-mono)}
   .nav-links a:hover{color:var(--pink)}
   .btn-apply{background:var(--gradient);color:#fff!important;padding:.6rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:700;font-family:var(--font-display)!important}
@@ -230,7 +230,7 @@
 <!-- NAV -->
 <nav>
   <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-3">
-    <a href="#" class="flex items-center gap-3 min-w-0">
+    <a href="#" class="nav-logo flex items-center gap-3 min-w-0">
       <span class="crest" id="nav-crest">&lt;LBA/&gt;</span>
       <span class="flex flex-col leading-tight min-w-0">
         <span id="nav-site-title" class="font-[Space_Grotesk] font-bold text-[1.02rem] sm:text-[1.2rem] truncate">Last Benchers Association</span>
@@ -562,11 +562,7 @@ function render(){
   document.getElementById('nav-site-title').textContent = s.site_title;
   document.getElementById('nav-site-tag').textContent = s.site_tag;
   document.title = s.site_title + " — Web Development Studio";
-if (s.logo_url) {
-  const logoImg = '<img src="' + esc(s.logo_url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
-  document.getElementById('nav-crest').innerHTML = logoImg;
-  document.getElementById('about-frame').innerHTML = logoImg;
-}
+
   
   document.getElementById('hero-eyebrow').textContent = s.hero_eyebrow;
   document.getElementById('hero-title').innerHTML = s.hero_title;
@@ -693,6 +689,13 @@ if (s.logo_url) {
     .map(([key,path]) => `<a class="social-icon" target="_blank" href="${s[key]}"><svg viewBox="0 0 24 24"><path d="${path}"/></svg></a>`)
     .join('');
 
+  if (s.logo_url) {
+  const logoImg = '<img src="' + esc(s.logo_url) + '" style="display:block;width:100%;height:100%;min-width:0;min-height:0;object-fit:cover;border-radius:inherit;">';
+  const navCrest = document.getElementById('nav-crest');
+  const aboutFrame = document.getElementById('about-frame');
+  if (navCrest) navCrest.innerHTML = logoImg;
+  if (aboutFrame) aboutFrame.innerHTML = logoImg;
+}
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 }
 
