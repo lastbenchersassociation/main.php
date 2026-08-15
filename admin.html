@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LBA Admin — Content Manager</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="icon" href="data:,"/>
+
+<!-- Same /exec URL as in index.html -->
+<script>
+  const API_URL = "hhttps://script.google.com/macros/s/AKfycbzQ8sXuU38r1GkEGmlxaCWsaxS0NUYfhu_QJyXuQYCpHID0-RJK5bund0-WRxDd8XZe/exec"; // paste your Apps Script web app /exec URL here
+</script>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --blue:#3D66E8; --pink:#F61AA8; --bg-pink:#F8C9D9; --heading:#1A1A1A; --body-text:#444;
+    --border:#E9D8DF; --gradient:linear-gradient(135deg,var(--blue),var(--pink));
+    --paper-alt:#FCEEF4; --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box}
+  body{font-family:var(--font-body);color:var(--body-text);background:var(--paper-alt);margin:0}
+  h1,h2,h3{font-family:var(--font-display);color:var(--heading)}
+  .brand-grad{background:var(--gradient);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:.65rem 1.3rem;border-radius:999px;font-weight:700;font-size:.86rem;cursor:pointer;border:none;transition:.2s}
+  .btn-primary{background:var(--gradient);color:#fff}
+  .btn-primary:hover{filter:brightness(1.06)}
+  .btn-outline{background:#fff;border:1.5px solid var(--border);color:var(--heading)}
+  .btn-outline:hover{border-color:var(--pink);color:var(--pink)}
+  .btn-danger{background:#fff;border:1.5px solid #f3c2c2;color:#c0392b}
+  .btn-danger:hover{background:#fdecec}
+  .card{background:#fff;border:1px solid var(--border);border-radius:16px;box-shadow:0 6px 24px rgba(61,102,232,.07)}
+  input,select,textarea{width:100%;padding:.6rem .8rem;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:.88rem;background:#fff}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--pink)}
+  label{font-size:.78rem;font-weight:600;color:var(--heading);display:block;margin-bottom:.25rem}
+  .tab-btn{padding:.7rem 1.2rem;border-radius:12px;font-weight:700;font-size:.88rem;cursor:pointer;color:var(--body-text)}
+  .tab-btn.active{background:var(--gradient);color:#fff}
+  .pill{font-family:var(--font-mono);font-size:.68rem;padding:2px 10px;border-radius:999px;background:var(--bg-pink);color:#E01097}
+  .switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;cursor:pointer;inset:0;background:#ddd;border-radius:999px;transition:.2s}
+  .slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  input:checked + .slider{background:var(--gradient)}
+  input:checked + .slider:before{transform:translateX(18px)}
+  table{width:100%;border-collapse:collapse;font-size:.85rem}
+  th{text-align:left;font-family:var(--font-mono);font-size:.7rem;text-transform:uppercase;color:#888;padding:.5rem .6rem;border-bottom:1px solid var(--border)}
+  td{padding:.6rem;border-bottom:1px solid #f2f2f2;vertical-align:top}
+  ::-webkit-scrollbar{width:8px;height:8px}
+  ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center px-4">
+  <div class="card p-8 w-full max-w-sm">
+    <div class="flex items-center gap-3 mb-6">
+      <span class="w-11 h-11 rounded-xl flex items-center justify-center text-white font-mono font-bold" style="background:var(--gradient)">LBA</span>
+      <div><h1 class="text-lg font-bold leading-tight">Admin Console</h1><p class="text-xs text-gray-500">Last Benchers Association</p></div>
+    </div>
+    <div id="login-error" class="hidden text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 mb-4"></div>
+    <div id="api-warning" class="hidden text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-4">Set <code>API_URL</code> at the top of admin.html before logging in.</div>
+    <form id="login-form" class="flex flex-col gap-4">
+      <div><label>Username</label><input id="login-user" required autocomplete="username"/></div>
+      <div><label>Password</label><input id="login-pass" type="password" required autocomplete="current-password"/></div>
+      <button class="btn btn-primary justify-center mt-2" type="submit" id="login-btn">Log In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard" class="hidden min-h-screen">
+  <header class="bg-white border-b sticky top-0 z-20" style="border-color:var(--border)">
+    <div class="max-w-[1200px] mx-auto px-5 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="w-9 h-9 rounded-lg flex items-center justify-center text-white font-mono font-bold text-sm" style="background:var(--gradient)">LBA</span>
+        <h1 class="text-base font-bold">Admin Console</h1>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="index.html" target="_blank" class="btn btn-outline text-xs">View Site ↗</a>
+        <button id="logout-btn" class="btn btn-outline text-xs">Log Out</button>
+      </div>
+    </div>
+    <div class="max-w-[1200px] mx-auto px-5 pb-3 flex gap-2 flex-wrap overflow-x-auto" id="tabs">
+      <div class="tab-btn active" data-tab="settings">Settings</div>
+      <div class="tab-btn" data-tab="services">Services</div>
+      <div class="tab-btn" data-tab="portfolio">Portfolio</div>
+      <div class="tab-btn" data-tab="clients">Clients</div>
+      <div class="tab-btn" data-tab="testimonials">Testimonials</div>
+      <div class="tab-btn" data-tab="enquiries">Enquiries</div>
+    </div>
+  </header>
+
+  <main class="max-w-[1200px] mx-auto px-5 py-8">
+
+    <!-- SETTINGS TAB -->
+    <section data-panel="settings" class="tab-panel">
+      <div class="card p-6 mb-6">
+        <h2 class="text-lg font-bold mb-1">Section Visibility</h2>
+        <p class="text-sm text-gray-500 mb-4">Turn whole sections of the public site on or off instantly.</p>
+        <div id="section-toggles" class="grid sm:grid-cols-2 gap-3"></div>
+      </div>
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-1">Site Content</h2>
+        <p class="text-sm text-gray-500 mb-4">Hero copy, about text, contact details and stats shown on the homepage.</p>
+        <div id="settings-form" class="grid sm:grid-cols-2 gap-4"></div>
+        <button id="save-settings-btn" class="btn btn-primary mt-6">Save Settings</button>
+        <span id="settings-status" class="text-sm ml-3"></span>
+      </div>
+    </section>
+
+    <!-- GENERIC CRUD TABS -->
+    <section data-panel="services" class="tab-panel hidden"></section>
+    <section data-panel="portfolio" class="tab-panel hidden"></section>
+    <section data-panel="clients" class="tab-panel hidden"></section>
+    <section data-panel="testimonials" class="tab-panel hidden"></section>
+
+    <!-- ENQUIRIES TAB -->
+    <section data-panel="enquiries" class="tab-panel hidden">
+      <div class="card p-6">
+        <h2 class="text-lg font-bold mb-1">Enquiries</h2>
+        <p class="text-sm text-gray-500 mb-4">Latest first. Submitted from the homepage enquiry form.</p>
+        <div class="overflow-x-auto"><table id="enquiries-table"><thead><tr><th>Date</th><th>Name</th><th>Phone</th><th>Email</th><th>Service</th><th>Message</th></tr></thead><tbody></tbody></table></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ═══ SHARED ITEM EDITOR MODAL ═══ -->
+<div id="modal-backdrop" class="hidden fixed inset-0 bg-black/40 z-40 flex items-center justify-center px-4">
+  <div class="card w-full max-w-lg p-6 max-h-[85vh] overflow-y-auto">
+    <h3 id="modal-title" class="text-lg font-bold mb-4">Edit item</h3>
+    <div id="modal-fields" class="flex flex-col gap-4"></div>
+    <div class="flex gap-3 mt-6">
+      <button id="modal-save" class="btn btn-primary">Save</button>
+      <button id="modal-cancel" class="btn btn-outline">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════ CONFIG ═══════════════════════ */
+const CONFIG = {
+  services:     { sheet:'Services',     label:'Service',     fields:[
+    {key:'icon', label:'Icon / Symbol (e.g. </>,  { }, $, API)', type:'text'},
+    {key:'name', label:'Name', type:'text'},
+    {key:'desc', label:'Description', type:'textarea'} ] },
+  portfolio:    { sheet:'Portfolio',    label:'Project',      fields:[
+    {key:'name', label:'Project Name', type:'text'},
+    {key:'client', label:'Client Name', type:'text'},
+    {key:'tag',  label:'Category Tag (e.g. Web App)', type:'text'},
+    {key:'desc', label:'Description', type:'textarea'},
+    {key:'tech', label:'Tech Stack (comma separated, e.g. React, Node.js)', type:'text'},
+    {key:'image', label:'Image URL (optional)', type:'text'},
+    {key:'link', label:'Link (optional)', type:'text'} ] },
+  clients:      { sheet:'Clients',      label:'Client',       fields:[
+    {key:'name', label:'Client / Institution Name', type:'text'},
+    {key:'url',  label:'Client Website (optional)', type:'text'} ] },
+  testimonials: { sheet:'Testimonials', label:'Testimonial',  fields:[
+    {key:'name', label:'Name', type:'text'},
+    {key:'role', label:'Role / Relationship', type:'text'},
+    {key:'text', label:'Testimonial Text', type:'textarea'},
+    {key:'rating', label:'Rating (1-5)', type:'number'} ] }
+};
+
+const SETTINGS_FIELDS = [
+  {key:'site_title', label:'Site Title'}, {key:'site_tag', label:'Site Tagline'},
+  {key:'hero_eyebrow', label:'Hero Eyebrow Tag'},
+  {key:'hero_title', label:'Hero Title (HTML ok, wrap highlight in <em>)', type:'textarea'},
+  {key:'hero_desc', label:'Hero Description', type:'textarea'},
+  {key:'stat1_num', label:'Stat 1 Number'}, {key:'stat1_label', label:'Stat 1 Label'},
+  {key:'stat2_num', label:'Stat 2 Number'}, {key:'stat2_label', label:'Stat 2 Label'},
+  {key:'stat3_num', label:'Stat 3 Number'}, {key:'stat3_label', label:'Stat 3 Label'},
+  {key:'about_quote', label:'About Quote'},
+  {key:'about_text_1', label:'About Paragraph 1', type:'textarea'},
+  {key:'about_text_2', label:'About Paragraph 2', type:'textarea'},
+  {key:'phone', label:'Phone (display)'}, {key:'whatsapp_number', label:'WhatsApp Number (digits only, with country code)'},
+  {key:'email', label:'Email'}, {key:'address', label:'Office Address'},
+  {key:'map_embed_url', label:'Google Maps Embed URL'},
+  {key:'instagram_url', label:'Instagram URL'}, {key:'facebook_url', label:'Facebook URL'},
+  {key:'linkedin_url', label:'LinkedIn URL'}, {key:'youtube_url', label:'YouTube URL'}
+];
+
+const SECTION_TOGGLES = [
+  {key:'show_services', label:'Services section'},
+  {key:'show_portfolio', label:'Client portfolio section'},
+  {key:'show_clients', label:'Clients trust strip'},
+  {key:'show_testimonials', label:'Testimonials section'}
+];
+
+let TOKEN = sessionStorage.getItem('lba_admin_token') || '';
+let ADMIN_DATA = null;
+let modalCtx = null; // {sheet, item}
+
+/* ═══════════════════════ API HELPERS ═══════════════════════ */
+async function apiPost(body){
+  const res = await fetch(API_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(body) });
+  return res.json();
+}
+async function apiGet(params){
+  const res = await fetch(API_URL + '?' + new URLSearchParams(params).toString());
+  return res.json();
+}
+
+/* ═══════════════════════ AUTH ═══════════════════════ */
+document.getElementById('login-form').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const errBox = document.getElementById('login-error');
+  errBox.classList.add('hidden');
+  if (!API_URL) { document.getElementById('api-warning').classList.remove('hidden'); return; }
+
+  const btn = document.getElementById('login-btn');
+  btn.textContent = 'Logging in...'; btn.disabled = true;
+  try {
+    const result = await apiPost({ action:'login', username: document.getElementById('login-user').value, password: document.getElementById('login-pass').value });
+    if (result.ok) {
+      TOKEN = result.token;
+      sessionStorage.setItem('lba_admin_token', TOKEN);
+      await boot();
+    } else {
+      errBox.textContent = result.error || 'Login failed.';
+      errBox.classList.remove('hidden');
+    }
+  } catch(err) {
+    errBox.textContent = 'Could not reach the server. Check API_URL and your deployment.';
+    errBox.classList.remove('hidden');
+  }
+  btn.textContent = 'Log In'; btn.disabled = false;
+});
+
+document.getElementById('logout-btn').addEventListener('click', async ()=>{
+  try { await apiPost({ action:'logout', token: TOKEN }); } catch(e){}
+  sessionStorage.removeItem('lba_admin_token');
+  TOKEN = '';
+  document.getElementById('dashboard').classList.add('hidden');
+  document.getElementById('login-screen').classList.remove('hidden');
+});
+
+/* ═══════════════════════ BOOT / LOAD ═══════════════════════ */
+async function boot(){
+  if (!API_URL) { document.getElementById('api-warning').classList.remove('hidden'); return; }
+  try {
+    const result = await apiGet({ action:'adminData', token: TOKEN });
+    if (!result.ok) throw new Error(result.error || 'Session invalid');
+    ADMIN_DATA = result;
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('hidden');
+    renderSettingsTab();
+    Object.keys(CONFIG).forEach(renderCrudTab);
+    renderEnquiries();
+  } catch(err) {
+    sessionStorage.removeItem('lba_admin_token');
+    TOKEN = '';
+    document.getElementById('login-error').textContent = 'Your session expired. Please log in again.';
+    document.getElementById('login-error').classList.remove('hidden');
+  }
+}
+
+/* ═══════════════════════ TABS ═══════════════════════ */
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const tabEl = e.target.closest('.tab-btn');
+  if (!tabEl) return;
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  tabEl.classList.add('active');
+  const tab = tabEl.dataset.tab;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('hidden', p.dataset.panel !== tab));
+});
+
+/* ═══════════════════════ SETTINGS TAB ═══════════════════════ */
+function renderSettingsTab(){
+  const s = ADMIN_DATA.settings;
+
+  document.getElementById('section-toggles').innerHTML = SECTION_TOGGLES.map(t => `
+    <label class="flex items-center gap-3 p-3 rounded-xl border cursor-pointer" style="border-color:var(--border)">
+      <span class="switch"><input type="checkbox" data-setting-toggle="${t.key}" ${String(s[t.key]).toUpperCase()!=='FALSE' ? 'checked' : ''}/><span class="slider"></span></span>
+      <span class="text-sm font-semibold">${t.label}</span>
+    </label>`).join('');
+
+  document.getElementById('settings-form').innerHTML = SETTINGS_FIELDS.map(f => `
+    <div class="${f.type==='textarea' ? 'sm:col-span-2' : ''}">
+      <label>${f.label}</label>
+      ${f.type==='textarea'
+        ? `<textarea rows="3" data-setting="${f.key}">${escapeHtml(s[f.key]||'')}</textarea>`
+        : `<input data-setting="${f.key}" value="${escapeHtml(s[f.key]||'')}"/>`}
+    </div>`).join('');
+}
+
+document.getElementById('save-settings-btn').addEventListener('click', async ()=>{
+  const status = document.getElementById('settings-status');
+  const payload = {};
+  document.querySelectorAll('[data-setting]').forEach(el => payload[el.dataset.setting] = el.value);
+  document.querySelectorAll('[data-setting-toggle]').forEach(el => payload[el.dataset.settingToggle] = el.checked ? 'TRUE' : 'FALSE');
+  status.textContent = 'Saving...'; status.style.color = '#888';
+  try {
+    const result = await apiPost({ action:'saveSettings', token: TOKEN, settings: payload });
+    status.textContent = result.ok ? 'Saved ✓' : (result.error || 'Failed to save.');
+    status.style.color = result.ok ? '#0E9F86' : '#c0392b';
+    if (result.ok) Object.assign(ADMIN_DATA.settings, payload);
+  } catch(err) { status.textContent = 'Network error.'; status.style.color = '#c0392b'; }
+});
+
+/* ═══════════════════════ GENERIC CRUD TABS ═══════════════════════ */
+function renderCrudTab(key){
+  const cfg = CONFIG[key];
+  const panel = document.querySelector(`[data-panel="${key}"]`);
+  const items = ADMIN_DATA[key] || [];
+
+  panel.innerHTML = `
+    <div class="card p-6">
+      <div class="flex items-center justify-between mb-4">
+        <div><h2 class="text-lg font-bold">${cfg.label}s</h2><p class="text-sm text-gray-500">Drag order isn't supported yet — use the Order column to sort.</p></div>
+        <button class="btn btn-primary text-xs" data-add="${key}">+ Add ${cfg.label}</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table>
+          <thead><tr>${cfg.fields.map(f=>`<th>${f.label}</th>`).join('')}<th>Order</th><th>Visible</th><th></th></tr></thead>
+          <tbody>
+            ${items.map(item => `
+              <tr data-id="${item.id}">
+                ${cfg.fields.map(f=>`<td class="max-w-[220px] truncate">${escapeHtml(String(item[f.key]||''))}</td>`).join('')}
+                <td>${item.order||''}</td>
+                <td><span class="switch"><input type="checkbox" data-toggle-id="${item.id}" data-toggle-sheet="${key}" ${String(item.visible).toUpperCase()!=='FALSE'?'checked':''}/><span class="slider"></span></td>
+                <td class="whitespace-nowrap">
+                  <button class="btn btn-outline text-xs" data-edit="${key}" data-id="${item.id}">Edit</button>
+                  <button class="btn btn-danger text-xs" data-delete="${key}" data-id="${item.id}">Delete</button>
+                </td>
+              </tr>`).join('') || `<tr><td colspan="${cfg.fields.length+3}" class="text-center text-gray-400 py-6">No ${cfg.label.toLowerCase()}s yet.</td></tr>`}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+
+  panel.querySelector(`[data-add="${key}"]`).addEventListener('click', () => openModal(key, {}));
+  panel.querySelectorAll(`[data-edit="${key}"]`).forEach(btn => btn.addEventListener('click', () => {
+    const item = items.find(i => String(i.id) === btn.dataset.id);
+    openModal(key, item);
+  }));
+  panel.querySelectorAll(`[data-delete="${key}"]`).forEach(btn => btn.addEventListener('click', async () => {
+    if (!confirm(`Delete this ${cfg.label.toLowerCase()}? This can't be undone.`)) return;
+    const result = await apiPost({ action:'deleteItem', token: TOKEN, sheet: cfg.sheet, id: btn.dataset.id });
+    if (result.ok) { ADMIN_DATA[key] = items.filter(i => String(i.id) !== btn.dataset.id); renderCrudTab(key); }
+    else alert(result.error || 'Delete failed.');
+  }));
+  panel.querySelectorAll(`[data-toggle-sheet="${key}"]`).forEach(chk => chk.addEventListener('change', async () => {
+    const result = await apiPost({ action:'toggleItem', token: TOKEN, sheet: cfg.sheet, id: chk.dataset.toggleId, value: chk.checked });
+    if (!result.ok) { chk.checked = !chk.checked; alert(result.error || 'Update failed.'); }
+    else { const it = items.find(i=>String(i.id)===chk.dataset.toggleId); if(it) it.visible = chk.checked ? 'TRUE':'FALSE'; }
+  }));
+}
+
+function openModal(key, item){
+  modalCtx = { key, item: Object.assign({}, item) };
+  const cfg = CONFIG[key];
+  document.getElementById('modal-title').textContent = (item.id ? 'Edit ' : 'Add ') + cfg.label;
+  document.getElementById('modal-fields').innerHTML = cfg.fields.map(f => `
+    <div>
+      <label>${f.label}</label>
+      ${f.type==='textarea'
+        ? `<textarea rows="3" data-field="${f.key}">${escapeHtml(item[f.key]||'')}</textarea>`
+        : `<input type="${f.type==='number'?'number':'text'}" data-field="${f.key}" value="${escapeHtml(item[f.key]!==undefined?item[f.key]:'')}"/>`}
+    </div>`).join('') + `
+    <div><label>Order (lower shows first)</label><input type="number" data-field="order" value="${item.order||''}"/></div>`;
+  document.getElementById('modal-backdrop').classList.remove('hidden');
+}
+
+document.getElementById('modal-cancel').addEventListener('click', () => document.getElementById('modal-backdrop').classList.add('hidden'));
+
+document.getElementById('modal-save').addEventListener('click', async () => {
+  const { key, item } = modalCtx;
+  const payload = Object.assign({}, item);
+  document.querySelectorAll('#modal-fields [data-field]').forEach(el => payload[el.dataset.field] = el.value);
+
+  const result = await apiPost({ action:'saveItem', token: TOKEN, sheet: CONFIG[key].sheet, item: payload });
+  if (result.ok) {
+    payload.id = payload.id || result.id;
+    if (item.id) {
+      const idx = ADMIN_DATA[key].findIndex(i => String(i.id) === String(item.id));
+      if (idx > -1) ADMIN_DATA[key][idx] = Object.assign({}, ADMIN_DATA[key][idx], payload);
+    } else {
+      ADMIN_DATA[key].push(Object.assign({visible:'TRUE'}, payload));
+    }
+    renderCrudTab(key);
+    document.getElementById('modal-backdrop').classList.add('hidden');
+  } else {
+    alert(result.error || 'Save failed.');
+  }
+});
+
+/* ═══════════════════════ ENQUIRIES ═══════════════════════ */
+function renderEnquiries(){
+  const tbody = document.querySelector('#enquiries-table tbody');
+  const rows = ADMIN_DATA.enquiries || [];
+  tbody.innerHTML = rows.map(r => `
+    <tr>
+      <td class="whitespace-nowrap">${new Date(r.timestamp).toLocaleString()}</td>
+      <td>${escapeHtml(r.name)}</td><td>${escapeHtml(r.phone)}</td><td>${escapeHtml(r.email)}</td>
+      <td>${escapeHtml(r.service)}</td><td class="max-w-[260px]">${escapeHtml(r.message)}</td>
+    </tr>`).join('') || `<tr><td colspan="6" class="text-center text-gray-400 py-6">No enquiries yet.</td></tr>`;
+}
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+/* Auto-login if a session token is already stored */
+if (TOKEN) boot(); else if (!API_URL) document.getElementById('api-warning').classList.remove('hidden');
+</script>
+</body>
+</html>
