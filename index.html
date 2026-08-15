@@ -231,7 +231,7 @@
 <nav>
   <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-3">
     <a href="#" class="flex items-center gap-3 min-w-0">
-      <span class="crest">&lt;LBA/&gt;</span>
+      <span class="crest" id="nav-crest">&lt;LBA/&gt;</span>
       <span class="flex flex-col leading-tight min-w-0">
         <span id="nav-site-title" class="font-[Space_Grotesk] font-bold text-[1.02rem] sm:text-[1.2rem] truncate">Last Benchers Association</span>
         <span id="nav-site-tag" class="font-mono text-[.6rem] text-[var(--pink)] uppercase tracking-wide truncate">Web Development Studio</span>
@@ -371,7 +371,7 @@
   </div>
   <div class="grid md:grid-cols-[.8fr_1.2fr] gap-12 items-start">
     <div class="card about-logo-card p-8 reveal delay-1">
-      <div class="frame mb-5"><span>&lt;LBA/&gt;</span><span style="font-size:.62rem;color:#5A5F72;font-weight:500">web.studio</span></div>
+      <div class="frame mb-5" id="about-frame"><span>&lt;LBA/&gt;</span><span style="font-size:.62rem;color:#5A5F72;font-weight:500">web.studio</span></div>
       <h3 class="text-lg font-bold mb-1" id="about-org-name">Last Benchers Association</h3>
       <span class="text-sm font-mono">Registered NGO &bull; Est. 2024</span>
     </div>
@@ -562,7 +562,12 @@ function render(){
   document.getElementById('nav-site-title').textContent = s.site_title;
   document.getElementById('nav-site-tag').textContent = s.site_tag;
   document.title = s.site_title + " — Web Development Studio";
-
+if (s.logo_url) {
+  const logoImg = '<img src="' + esc(s.logo_url) + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
+  document.getElementById('nav-crest').innerHTML = logoImg;
+  document.getElementById('about-frame').innerHTML = logoImg;
+}
+  
   document.getElementById('hero-eyebrow').textContent = s.hero_eyebrow;
   document.getElementById('hero-title').innerHTML = s.hero_title;
   document.getElementById('hero-desc').textContent = s.hero_desc;
