@@ -10,7 +10,7 @@
 
 <!-- ═══ CONFIG — set this once you deploy code.gs (Deploy → Web app → copy /exec URL) ═══ -->
 <script>
-  const API_URL = "https://script.google.com/macros/s/AKfycbzQ8sXuU38r1GkEGmlxaCWsaxS0NUYfhu_QJyXuQYCpHID0-RJK5bund0-WRxDd8XZe/exec"; // e.g. "https://script.google.com/macros/s/AKfycb.../exec" — leave blank to use built-in demo content
+  const API_URL = "https://script.google.com/macros/s/AKfycby1brc3q11WpOsqsfSemkVtY0y1iETjf7EGiu6TeZarigNNZIFJafU8PXxf1D2lLSQG/exec"; // e.g. "https://script.google.com/macros/s/AKfycb.../exec" — leave blank to use built-in demo content
 </script>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -28,11 +28,20 @@
     --card-shadow:0 10px 34px rgba(61,102,232,.09); --card-shadow-hover:0 16px 44px rgba(246,26,168,.16);
     --font-display:'Space Grotesk',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
     --radius:18px; --radius-sm:10px; --transition:all .35s cubic-bezier(.16,1,.3,1);
+    --body-bg:#FFFFFF; --scroll-track:#fff;
+  }
+  [data-theme="dark"]{
+    --white:#12141C; --heading:#F2F3F7; --body-text:#B7BAC9; --border:#2A2D3B;
+    --paper:#181B25; --paper-alt:#1E212C; --bg-pink:#2A2033;
+    --card-shadow:0 10px 34px rgba(0,0,0,.35); --card-shadow-hover:0 16px 44px rgba(246,26,168,.22);
+    --bg-gradient:linear-gradient(180deg,#12141C 0%,#181420 45%,#0F1115 100%);
+    --body-bg:#0F1115; --scroll-track:#12141C;
+    --hover-pink:#FF5FC0; --hover-blue:#7C9BFF;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   ::selection{background:var(--pink);color:#fff}
   html{scroll-behavior:smooth;overflow-x:hidden}
-  body{font-family:var(--font-body);background:#fff;color:var(--body-text);line-height:1.65;overflow-x:hidden}
+  body{font-family:var(--font-body);background:var(--body-bg);color:var(--body-text);line-height:1.65;overflow-x:hidden;transition:background .35s ease,color .35s ease}
   h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.01em;color:var(--heading)}
   a{color:inherit;text-decoration:none;transition:var(--transition)}
   img{max-width:100%;display:block}
@@ -52,6 +61,7 @@
   .live-bg{position:fixed;inset:0;z-index:-5;overflow:hidden;pointer-events:none;
     background-image:radial-gradient(rgba(61,102,232,.14) 1px, transparent 1px);
     background-size:26px 26px; mask-image:linear-gradient(180deg,#000 0%,#000 55%,transparent 100%)}
+  [data-theme="dark"] .live-bg{background-image:radial-gradient(rgba(124,155,255,.18) 1px, transparent 1px);}
   .bg-glow{position:absolute;border-radius:50%;filter:blur(150px);opacity:.22}
   .glow-1{width:38vw;height:38vw;background:var(--blue);top:-12%;right:-10%}
   .glow-2{width:34vw;height:34vw;background:var(--pink);bottom:-10%;left:-8%;opacity:.16}
@@ -70,18 +80,34 @@
   .section-title{font-size:clamp(1.9rem,3.4vw,2.6rem);font-weight:800}
   .btn-primary{display:inline-flex;align-items:center;gap:8px;padding:.95rem 1.9rem;font-weight:700;font-size:.95rem;border-radius:10px;background:var(--gradient);color:#fff;box-shadow:0 10px 26px rgba(246,26,168,.28);border:none;cursor:pointer;font-family:var(--font-display)}
   .btn-primary:hover{transform:translateY(-2px);filter:brightness(1.05)}
-  .btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:.95rem 1.9rem;font-weight:700;font-size:.95rem;border-radius:10px;background:#fff;border:1.5px solid var(--blue);color:var(--blue);font-family:var(--font-mono)}
+  .btn-secondary{display:inline-flex;align-items:center;gap:8px;padding:.95rem 1.9rem;font-weight:700;font-size:.95rem;border-radius:10px;background:var(--paper);border:1.5px solid var(--blue);color:var(--blue);font-family:var(--font-mono)}
   .btn-secondary:hover{border-color:var(--pink);color:var(--pink);background:var(--bg-pink)}
 
   #whatsapp-float{position:fixed;left:22px;bottom:22px;z-index:999;width:56px;height:56px;border-radius:14px;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(37,211,102,.45);animation:waPulse 2.4s ease-in-out infinite}
   #whatsapp-float svg{width:28px;height:28px;fill:#fff}
   @keyframes waPulse{0%,100%{box-shadow:0 10px 30px rgba(37,211,102,.45)}50%{box-shadow:0 10px 30px rgba(37,211,102,.75),0 0 0 10px rgba(37,211,102,.12)}}
 
-  nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+  /* ── dark-mode toggle ── */
+  #theme-toggle{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--paper);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  #theme-toggle svg{width:17px;height:17px;stroke:var(--heading);fill:none;stroke-width:2}
+  #theme-toggle:hover{border-color:var(--pink)}
+  #theme-toggle .icon-moon{display:none}
+  [data-theme="dark"] #theme-toggle .icon-sun{display:none}
+  [data-theme="dark"] #theme-toggle .icon-moon{display:block}
+
+  nav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);transition:background .35s ease,border-color .35s ease}
+  [data-theme="dark"] nav{background:rgba(15,17,21,.85)}
   .nav-logo .crest{width:38px;height:38px;border-radius:10px;background:var(--ink);border:1px solid #2A2D38;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:.72rem;color:#8FD19E;flex-shrink:0}
   .nav-links a{font-size:.88rem;font-weight:600;color:var(--body-text);font-family:var(--font-mono)}
   .nav-links a:hover{color:var(--pink)}
   .btn-apply{background:var(--gradient);color:#fff!important;padding:.6rem 1.3rem;border-radius:8px;font-size:.82rem;font-weight:700;font-family:var(--font-display)!important}
+  .hamburger{display:none;background:none;border:none;cursor:pointer}
+  .hamburger svg{width:26px;height:26px;fill:var(--heading)}
+  .search-form{position:relative;display:flex;align-items:center}
+  .search-input{background:var(--paper-alt);border:2px solid var(--border);border-radius:999px;padding:.5rem 1rem .5rem 2.1rem;font-size:.88rem;color:var(--heading);width:160px;font-family:var(--font-body)}
+  .search-input:focus{outline:none;border-color:var(--blue);width:200px}
+  .search-btn{position:absolute;left:10px;background:none;border:none;cursor:pointer}
+  .search-btn svg{width:15px;height:15px;fill:var(--body-text)}
 
   /* ── hero ── */
   .hero{padding:4.5rem 1.5rem 3rem;max-width:1280px;margin:0 auto}
@@ -132,30 +158,52 @@
   .project-thumb .term-mini .tk-pink{color:var(--pink)}.project-thumb .term-mini .tk-key{color:var(--blue)}
   .project-client{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
   .client-badge{width:30px;height:30px;border-radius:8px;background:var(--gradient);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:.66rem;flex-shrink:0}
-  .tech-tag{font-family:var(--font-mono);font-size:.66rem;background:#F1F4FD;color:var(--hover-blue);padding:2px 8px;border-radius:5px;display:inline-block;margin:0 6px 6px 0}
+  .tech-tag{font-family:var(--font-mono);font-size:.66rem;background:var(--paper-alt);color:var(--hover-blue);padding:2px 8px;border-radius:5px;display:inline-block;margin:0 6px 6px 0}
   .project-enquire{font-weight:700;font-size:.83rem;color:var(--hover-pink);display:inline-flex;align-items:center;gap:6px;font-family:var(--font-mono)}
   .project-card:hover .project-enquire{gap:10px}
 
   /* ── clients trust strip ── */
-  .client-chip{display:flex;align-items:center;gap:.6rem;background:#fff;border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem}
+  .client-chip{display:flex;align-items:center;gap:.6rem;background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:.7rem 1rem}
   .client-chip .mark{width:34px;height:34px;border-radius:8px;background:var(--bg-pink);color:var(--hover-pink);display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;font-size:.72rem;flex-shrink:0}
   .client-chip span{font-size:.85rem;font-weight:600;color:var(--heading)}
 
   .star{color:#F6C90E}
 
+  /* ── gallery ── */
+  .gallery-grid-pro{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem}
+  .gallery-card-pro{background:var(--paper);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--card-shadow);cursor:pointer;transition:var(--transition)}
+  .gallery-card-pro:hover{transform:translateY(-6px);box-shadow:var(--card-shadow-hover)}
+  .gallery-card-pro-img{width:100%;aspect-ratio:4/3;overflow:hidden;background:var(--paper-alt)}
+  .gallery-card-pro-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+  .gallery-card-pro:hover .gallery-card-pro-img img{transform:scale(1.08)}
+  .gallery-card-pro-body{padding:.9rem 1.1rem 1.1rem}
+  .gallery-card-pro-cap{font-size:.88rem;font-weight:600;color:var(--heading)}
+  .lightbox{position:fixed;inset:0;background:rgba(15,17,21,.92);display:none;align-items:center;justify-content:center;z-index:300;padding:24px}
+  .lightbox.active{display:flex}
+  .lightbox img{max-height:82vh;max-width:92vw;border-radius:12px}
+  .lightbox-close{position:absolute;top:20px;right:26px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:26px;cursor:pointer;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center}
+  .lightbox-close:hover{background:var(--pink);border-color:var(--pink)}
+
   .form-field label{font-family:var(--font-mono);font-size:.72rem;color:var(--hover-blue)}
-  .form-field input,.form-field select,.form-field textarea{width:100%;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:.94rem;background:#fff;color:var(--heading)}
+  .form-field input,.form-field select,.form-field textarea{width:100%;padding:.85rem 1rem;border:1.5px solid var(--border);border-radius:10px;font-family:var(--font-body);font-size:.94rem;background:var(--paper);color:var(--heading)}
   .form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--pink)}
 
   .contact-icon{width:44px;height:44px;border-radius:10px;background:var(--ink);color:#8FD19E;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
-  .social-icon{width:40px;height:40px;border-radius:10px;background:#fff;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--body-text)}
+  .social-icon{width:40px;height:40px;border-radius:10px;background:var(--paper);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--body-text)}
   .social-icon:hover{color:#fff;background:var(--gradient);border-color:transparent;transform:translateY(-3px)}
   .social-icon svg{width:17px;height:17px;fill:currentColor}
 
+  .empty-state{padding:2.2rem;text-align:center;color:var(--body-text);font-weight:700;border:2px dashed var(--border);border-radius:var(--radius-sm);grid-column:1/-1}
+
   ::-webkit-scrollbar{width:8px}
-  ::-webkit-scrollbar-track{background:#fff}
+  ::-webkit-scrollbar-track{background:var(--scroll-track)}
   ::-webkit-scrollbar-thumb{background:var(--border);border-radius:10px}
+
+  @media(max-width:768px){
+    .hamburger{display:block}
+    #nav-menu{display:none}
+  }
 </style>
 </head>
 <body class="antialiased">
@@ -173,9 +221,15 @@
   <svg viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.29-1.39c1.44.79 3.06 1.2 4.71 1.2h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2zm5.85 14.02c-.25.7-1.45 1.34-2 1.43-.53.09-1.15.13-1.86-.12-.43-.15-.98-.33-1.69-.65-2.97-1.28-4.9-4.26-5.05-4.46-.15-.2-1.21-1.61-1.21-3.07 0-1.46.77-2.18 1.04-2.48.27-.3.6-.37.8-.37.2 0 .4 0 .58.01.19.01.44-.07.68.52.25.6.85 2.07.92 2.22.07.15.12.33.02.53-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.15-.3.31-.13.61.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.48.13.65-.08.18-.2.75-.87.95-1.17.2-.3.4-.25.68-.15.27.1 1.75.83 2.05.98.3.15.5.22.57.35.08.13.08.72-.17 1.42z"/></svg>
 </a>
 
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lightboxClose">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
 <!-- NAV -->
 <nav>
-  <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between">
+  <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-3">
     <a href="#" class="flex items-center gap-3 min-w-0">
       <span class="crest">&lt;LBA/&gt;</span>
       <span class="flex flex-col leading-tight min-w-0">
@@ -183,17 +237,21 @@
         <span id="nav-site-tag" class="font-mono text-[.6rem] text-[var(--pink)] uppercase tracking-wide truncate">Web Development Studio</span>
       </span>
     </a>
-    <button id="hamburger" class="md:hidden" aria-label="Menu">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="var(--heading)"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg>
-    </button>
-    <div id="nav-menu" class="hidden md:flex items-center gap-6 nav-links">
-      <ul class="hidden md:flex gap-6 items-center list-none">
-        <li><a href="#hero">home</a></li>
-        <li><a href="#services">services</a></li>
-        <li id="nav-portfolio-link"><a href="#portfolio">work</a></li>
-        <li><a href="#about">about</a></li>
-        <li><a class="btn-apply" href="#enquiry">Get a Quote</a></li>
-      </ul>
+    <div class="flex items-center gap-3">
+      <div id="nav-menu" class="hidden md:flex items-center gap-6 nav-links">
+        <ul class="hidden md:flex gap-6 items-center list-none">
+          <li><a href="#hero">home</a></li>
+          <li><a href="#services">services</a></li>
+          <li id="nav-portfolio-link"><a href="#portfolio">work</a></li>
+          <li><a href="#about">about</a></li>
+          <li><a class="btn-apply" href="#enquiry">Get a Quote</a></li>
+        </ul>
+      </div>
+      <button id="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="hamburger" id="navToggle"><svg viewBox="0 0 24 24"><path d="M3 6h18v2H3V6zm0 5h18v2H3v-2zm0 5h18v2H3v-2z"/></svg></button>
     </div>
   </div>
   <div id="nav-menu-mobile" class="hidden md:hidden flex-col gap-4 px-6 py-5 border-t" style="border-color:var(--border)">
@@ -335,6 +393,16 @@
   <div id="portfolio-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"></div>
 </section>
 
+<!-- GALLERY -->
+<section id="gallery-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="gallery" style="display:none">
+  <div class="reveal mb-11">
+    <div class="eyebrow">behind the scenes</div>
+    <h2 class="section-title mb-2">Gallery</h2>
+    <p class="max-w-[580px]">Snapshots from client builds, workshops and the team.</p>
+  </div>
+  <div id="gallery-grid" class="gallery-grid-pro reveal delay-1"></div>
+</section>
+
 <!-- TESTIMONIALS -->
 <section id="testimonials-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="testimonials">
   <div class="reveal mb-11">
@@ -414,6 +482,23 @@
 </footer>
 
 <script>
+/* ═══════════════════════ DARK MODE ═══════════════════════
+   Applied before first paint's reveal animations run, respects the
+   OS preference on first visit, remembered for the rest of the tab
+   session (sessionStorage — same persistence pattern used elsewhere
+   on this site for the boot screen / admin token). */
+(function initTheme(){
+  const saved = sessionStorage.getItem('lba_theme');
+  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const theme = saved || (prefersDark ? 'dark' : 'light');
+  if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+})();
+document.getElementById('theme-toggle').addEventListener('click', function(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  if (isDark) { document.documentElement.removeAttribute('data-theme'); sessionStorage.setItem('lba_theme', 'light'); }
+  else { document.documentElement.setAttribute('data-theme', 'dark'); sessionStorage.setItem('lba_theme', 'dark'); }
+});
+
 /* ═══════════════════════ DEMO / FALLBACK CONTENT ═══════════════════════
    Used instantly on load, and whenever API_URL is blank or unreachable,
    so the site always looks complete even before the backend is wired up. */
@@ -437,7 +522,7 @@ const FALLBACK = {
     facebook_url: "https://www.facebook.com/profile.php?id=61585378478079",
     linkedin_url: "https://www.linkedin.com/in/last-benchers-association-69975b34a",
     youtube_url: "https://www.youtube.com/@lastbenchersassociationngo",
-    show_services: "TRUE", show_portfolio: "TRUE", show_clients: "TRUE", show_testimonials: "TRUE"
+    show_services: "TRUE", show_portfolio: "TRUE", show_gallery: "TRUE", show_clients: "TRUE", show_testimonials: "TRUE"
   },
   services: [
     {icon:"</>", name:"Custom Web Development", desc:"Hand-built websites on modern stacks — fast, accessible, and easy for you to maintain."},
@@ -452,6 +537,7 @@ const FALLBACK = {
     {name:"Dynamic Institutional Portal", client:"Growing Colleges", tag:"Web Platform", tech:"Apps Script, Blogger", desc:"Apps Script backend integrated with Blogger, with dynamic section uploads for growing institutions.", link:"#"},
     {name:"Custom Web Application", client:"Medium-to-Large Institutions", tag:"Web App", tech:"React, Node.js, PHP", desc:"Fully custom, highly scalable web apps built on modern frameworks for larger institutions.", link:"#"}
   ],
+  gallery: [],
   clients: [
     {name:"Local Public Schools"}, {name:"Community Colleges"}, {name:"Training Institutes"},
     {name:"Small Businesses"}, {name:"Partner NGOs"}
@@ -533,16 +619,17 @@ function render(){
   if (showPortfolio) {
     document.getElementById('portfolio-grid').innerHTML = DATA.portfolio.map((p,i)=>{
       const techTags = (p.tech||'').split(',').map(t=>t.trim()).filter(Boolean).map(t=>`<span class="tech-tag">${esc(t)}</span>`).join('');
-      return `
-      <div class="card project-card overflow-hidden flex flex-col reveal delay-${(i%3)+1}">
-        <div class="project-thumb">
-          <div class="term-mini">
+      const thumb = p.image
+        ? `<img src="${esc(p.image)}" style="width:100%;height:100%;object-fit:cover;">`
+        : `<div class="term-mini">
             <div><span class="tk-pink">const</span> project = {</div>
             <div>&nbsp;&nbsp;client: <span class="tk-key">"${esc(p.client||'')}"</span>,</div>
             <div>&nbsp;&nbsp;status: <span class="tk-key">"shipped"</span></div>
             <div>};</div>
-          </div>
-        </div>
+          </div>`;
+      return `
+      <div class="card project-card overflow-hidden flex flex-col reveal delay-${(i%3)+1}">
+        <div class="project-thumb">${thumb}</div>
         <div class="p-7 flex flex-col gap-3 flex-grow">
           <div class="project-client">
             <span class="client-badge">${initials(p.client||p.name)}</span>
@@ -555,6 +642,24 @@ function render(){
         </div>
       </div>`;
     }).join('');
+  }
+
+  // Gallery
+  const showGallery = String(s.show_gallery).toUpperCase() !== 'FALSE';
+  const gallerySection = document.getElementById('gallery-section');
+  gallerySection.style.display = (showGallery && DATA.gallery && DATA.gallery.length) ? 'block' : 'none';
+  if (showGallery && DATA.gallery && DATA.gallery.length) {
+    document.getElementById('gallery-grid').innerHTML = DATA.gallery.map(g => `
+      <div class="gallery-card-pro" data-src="${esc(g.imageUrl||g.image)}" data-caption="${esc(g.caption||'')}">
+        <div class="gallery-card-pro-img"><img src="${esc(g.imageUrl||g.image)}" alt="${esc(g.caption||'')}" loading="lazy"></div>
+        ${g.caption ? `<div class="gallery-card-pro-body"><div class="gallery-card-pro-cap">${esc(g.caption)}</div></div>` : ''}
+      </div>`).join('');
+    document.querySelectorAll('.gallery-card-pro').forEach(el => {
+      el.onclick = () => {
+        document.getElementById('lightboxImg').src = el.dataset.src;
+        document.getElementById('lightbox').classList.add('active');
+      };
+    });
   }
 
   // Testimonials
@@ -598,6 +703,7 @@ async function loadData(){
         settings: Object.assign({}, FALLBACK.settings, json.settings || {}),
         services: (json.services && json.services.length) ? json.services : FALLBACK.services,
         portfolio: (json.portfolio && json.portfolio.length) ? json.portfolio : FALLBACK.portfolio,
+        gallery: (json.gallery && json.gallery.length) ? json.gallery : FALLBACK.gallery,
         clients: (json.clients && json.clients.length) ? json.clients : FALLBACK.clients,
         testimonials: (json.testimonials && json.testimonials.length) ? json.testimonials : FALLBACK.testimonials
       };
@@ -614,7 +720,7 @@ document.getElementById('enquiry-form').addEventListener('submit', async functio
   const btn = document.getElementById('eq-submit-btn');
   const status = document.getElementById('eq-status');
   const payload = {
-    action: 'enquiry',
+    action: 'submitEnquiry',
     name: document.getElementById('eq-name').value,
     phone: document.getElementById('eq-phone').value,
     email: document.getElementById('eq-email').value,
@@ -626,12 +732,20 @@ document.getElementById('enquiry-form').addEventListener('submit', async functio
 
   if (API_URL) {
     try {
-      await fetch(API_URL, { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) });
-      status.textContent = "✓ 200 OK — we'll reach out within a business day.";
-      status.style.color = '#0E9F86';
-      document.getElementById('enquiry-form').reset();
+      const res = await fetch(API_URL, { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) });
+      const json = await res.json();
+      if (json && json.ok) {
+        status.textContent = "✓ 200 OK — we'll reach out within a business day.";
+        status.style.color = '#0E9F86';
+        document.getElementById('enquiry-form').reset();
+      } else {
+        status.textContent = (json && json.error) || "Couldn't submit — opening WhatsApp instead.";
+        status.style.color = '#c0392b';
+        sendToWhatsApp(payload);
+      }
     } catch(err) {
       status.textContent = "Couldn't submit automatically — opening WhatsApp instead.";
+      status.style.color = '#c0392b';
       sendToWhatsApp(payload);
     }
   } else {
@@ -654,7 +768,10 @@ const revealObserver = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target);} });
 }, { threshold:.1, rootMargin:'0px 0px -40px 0px' });
 
-document.getElementById('hamburger').addEventListener('click', ()=>{
+document.getElementById('lightboxClose').onclick = () => document.getElementById('lightbox').classList.remove('active');
+document.getElementById('lightbox').addEventListener('click', function(e){ if (e.target === this) this.classList.remove('active'); });
+
+document.getElementById('navToggle').addEventListener('click', ()=>{
   document.getElementById('nav-menu-mobile').classList.toggle('hidden');
   document.getElementById('nav-menu-mobile').classList.toggle('flex');
 });
