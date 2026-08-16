@@ -185,7 +185,7 @@ tr:last-child td{border-bottom:none;}
 /* =========================================================
    CONFIG — same /exec URL as index.html
    ========================================================= */
-const API_URL = "https://script.google.com/macros/s/AKfycby1brc3q11WpOsqsfSemkVtY0y1iETjf7EGiu6TeZarigNNZIFJafU8PXxf1D2lLSQG/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbxnD5cKQRorgQNYE0waL_cvZjaWzdp6sHa8kD-YImIiisDjdh5scBKjbwwmhbPFUts/exec";
 let TOKEN = sessionStorage.getItem('lba_admin_token') || '';
 let ADMIN = null; // last-loaded adminData payload
 
@@ -554,7 +554,8 @@ function renderEnquiries(c) {
    ========================================================= */
 const SETTINGS_FIELDS = [
   ['Brand', [
-    ['site_title', 'Site Title', 'text'], ['site_tag', 'Site Tagline', 'text'], ['logo_url', 'Logo URL (optional)', 'text']
+    ['site_title', 'Site Title', 'text'], ['site_tag', 'Site Tagline', 'text'],
+    ['logo_url', 'Logo URL (used for both the small navbar mark and the About section image)', 'text']
   ]],
   ['Hero Section', [
     ['hero_eyebrow', 'Hero Eyebrow Tag', 'text'],
@@ -576,7 +577,8 @@ const SETTINGS_FIELDS = [
   ]],
   ['Social Links', [
     ['instagram_url', 'Instagram URL', 'text'], ['facebook_url', 'Facebook URL', 'text'],
-    ['linkedin_url', 'LinkedIn URL', 'text'], ['youtube_url', 'YouTube URL', 'text']
+    ['linkedin_url', 'LinkedIn URL', 'text'], ['youtube_url', 'YouTube URL', 'text'],
+    ['pinterest_url', 'Pinterest URL', 'text']
   ]]
 ];
 const SECTION_TOGGLES = [
@@ -587,7 +589,7 @@ const SECTION_TOGGLES = [
 function renderSettings(c) {
   const s = (ADMIN && ADMIN.settings) || {};
   c.innerHTML =
-    '<div class="panel"><h3 style="margin-top:0;">Section Visibility</h3><p class="hint" style="margin-bottom:14px;">Turn whole sections of the public site on or off instantly.</p>' +
+    '<div class="panel"><h3 style="margin-top:0;">Section Visibility</h3><p class="hint" style="margin-bottom:14px;">These toggles are a manual override. A section only shows on the site once this is on <em>and</em> it has at least one item added below — sections with no items stay hidden automatically, even if the toggle is on.</p>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">' +
     SECTION_TOGGLES.map(function (t) {
       return '<label style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;">' +
