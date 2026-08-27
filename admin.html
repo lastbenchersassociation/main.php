@@ -356,13 +356,15 @@ const CRUD_CONFIG = {
       { key: 'link', label: 'Link (optional)', type: 'text' }
     ]
   },
-  clients: {
-    sheet: 'Clients', label: 'Client', columns: ['name', 'url'],
-    fields: [
-      { key: 'name', label: 'Client / Institution Name', type: 'text' },
-      { key: 'url', label: 'Client Website (optional)', type: 'text' }
-    ]
-  },
+clients: {
+  sheet: 'Clients', label: 'Client', columns: ['name', 'url'],
+  fields: [
+    { key: 'name', label: 'Client / Institution Name', type: 'text' },
+    { key: 'image', label: 'Logo (upload or paste link)', type: 'image' },
+    { key: 'url', label: 'Client Website (optional)', type: 'text' }
+  ]
+},
+  
   testimonials: {
     sheet: 'Testimonials', label: 'Testimonial', columns: ['name', 'role', 'rating'],
     fields: [
