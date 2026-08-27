@@ -875,8 +875,8 @@ function hideBoot(){
   setTimeout(()=>{ boot.style.display = 'none'; }, 600);
 }
 
-const MIN_BOOT_MS = 900;   // keep the animation visible at least this long, so it never "flashes"
-const MAX_BOOT_MS = 4000;  // hard cap — never block real users if the backend is slow or down
+const MIN_BOOT_MS = 1500;   // keep the animation visible at least this long, so it never "flashes"
+const MAX_BOOT_MS = 4500;  // hard cap — never block real users if the backend is slow or down
 
 if (sessionStorage.getItem('lba_booted')) {
   // already booted once this tab session — skip the screen, fetch quietly, then render
