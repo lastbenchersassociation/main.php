@@ -103,6 +103,8 @@
 .chatbot-form input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font-body);background:var(--paper);color:var(--heading)}
 .chatbot-form input:focus{outline:none;border-color:var(--pink)}
 .chatbot-form button{width:38px;height:38px;border-radius:10px;border:none;background:var(--gradient);color:#fff;font-weight:700;cursor:pointer;flex-shrink:0}
+ .chatbot-whatsapp{display:block;text-align:center;padding:.6rem;font-family:var(--font-mono);font-size:.74rem;font-weight:700;color:#25D366;border-top:1px solid var(--border);background:var(--paper);flex-shrink:0}
+.chatbot-whatsapp:hover{background:var(--paper-alt)}
 @media(max-width:480px){#chatbot-panel{right:12px;bottom:82px}}
 
 
@@ -349,6 +351,7 @@
     <input id="chatbot-input" type="text" placeholder="Type a message…" autocomplete="off" required>
     <button type="submit" aria-label="Send">→</button>
   </form>
+ <a id="chatbot-whatsapp-link" class="chatbot-whatsapp" target="_blank" rel="noopener" href="#">💬 Chat directly on WhatsApp</a>
 </div>
 
  
@@ -446,16 +449,6 @@
   </div>
 </section>
 
-<!-- SERVICES -->
-<section id="services" class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-20">
-  <div class="reveal mb-11">
-    <div class="eyebrow">what we do</div>
-    <h2 class="section-title mb-2">Core Services</h2>
-    <p class="max-w-[580px]">No branding fluff, no scope creep — just websites and web applications engineered properly, from first commit to production.</p>
-  </div>
-  <div id="services-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(270px,1fr))"></div>
-</section>
-
 <!-- WHY US -->
 <section class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-24">
   <div class="reveal grid md:grid-cols-[1.2fr_.8fr] gap-10 items-start">
@@ -480,6 +473,19 @@
   </div>
 </section>
 
+ 
+<!-- SERVICES -->
+<section id="services" class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-20">
+  <div class="reveal mb-11">
+    <div class="eyebrow">what we do</div>
+    <h2 class="section-title mb-2">Core Services</h2>
+    <p class="max-w-[580px]">No branding fluff, no scope creep — just websites and web applications engineered properly, from first commit to production.</p>
+  </div>
+  <div id="services-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(270px,1fr))"></div>
+</section>
+
+
+
 <!-- CLIENTS TRUST STRIP -->
 <section id="clients-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-24" style="display:none" data-section="clients">
   <div class="reveal mb-8">
@@ -490,6 +496,17 @@
  <div id="clients-grid" class="grid gap-5 reveal delay-1" style="grid-template-columns:repeat(auto-fit,minmax(180px,1fr))"></div>
 </section>
 
+<!-- CLIENT PORTFOLIO -->
+<section id="portfolio-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="portfolio" style="display:none">
+  <div class="reveal mb-11">
+    <div class="eyebrow">our work</div>
+    <h2 class="section-title mb-2">Client portfolio</h2>
+    <p class="max-w-[580px]">A sample of what we've shipped for real clients. Tap Enquire on any build to request similar samples on WhatsApp.</p>
+  </div>
+  <div id="portfolio-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"></div>
+</section>
+
+ 
 <!-- ABOUT -->
 <section id="about" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20">
   <div class="reveal mb-11">
@@ -509,7 +526,32 @@
     </div>
   </div>
 </section>
-  
+
+ <!-- GALLERY -->
+<section id="gallery-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="gallery" style="display:none">
+  <div class="reveal mb-11">
+    <div class="eyebrow">WHY Last Benchers Association</div>
+    <h2 class="section-title mb-2">Bridging the Digital Divide for Local Institutions</h2>
+    <p class="max-w-[580px]">At Last Benchers Association, we believe that high-quality digital infrastructure shouldn't be a luxury reserved only for elite, high-budget institutions. Every small school and local educational center deserves a strong online presence to connect with students, showcase their work, and streamline admissions.</p>
+  </div>
+  <div class="gallery-scroll-wrap">
+  <button class="gallery-arrow prev" id="gallery-prev" aria-label="Previous photo"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <div id="gallery-grid" class="gallery-grid-pro reveal delay-1"></div>
+  <button class="gallery-arrow next" id="gallery-next" aria-label="Next photo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
+</div>
+</section>
+
+
+<!-- TESTIMONIALS -->
+<section id="testimonials-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="testimonials" style="display:none">
+  <div class="reveal mb-11">
+    <div class="eyebrow">reviews.log</div>
+    <h2 class="section-title">What clients say</h2>
+  </div>
+  <div id="testimonials-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"></div>
+</section>
+
+ 
   <!-- SOCIAL MEDIA UPDATES -->
 <section id="social" class="social-embeds-section reveal">
   <div class="eyebrow" style="justify-content:center">stay in touch</div>
@@ -550,38 +592,10 @@
 </section>
   
  
-<!-- CLIENT PORTFOLIO -->
-<section id="portfolio-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="portfolio" style="display:none">
-  <div class="reveal mb-11">
-    <div class="eyebrow">our work</div>
-    <h2 class="section-title mb-2">Client portfolio</h2>
-    <p class="max-w-[580px]">A sample of what we've shipped for real clients. Tap Enquire on any build to request similar samples on WhatsApp.</p>
-  </div>
-  <div id="portfolio-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr))"></div>
-</section>
 
-<!-- GALLERY -->
-<section id="gallery-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="gallery" style="display:none">
-  <div class="reveal mb-11">
-    <div class="eyebrow">WHY Last Benchers Association</div>
-    <h2 class="section-title mb-2">Bridging the Digital Divide for Local Institutions</h2>
-    <p class="max-w-[580px]">At Last Benchers Association, we believe that high-quality digital infrastructure shouldn't be a luxury reserved only for elite, high-budget institutions. Every small school and local educational center deserves a strong online presence to connect with students, showcase their work, and streamline admissions.</p>
-  </div>
-  <div class="gallery-scroll-wrap">
-  <button class="gallery-arrow prev" id="gallery-prev" aria-label="Previous photo"><svg viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
-  <div id="gallery-grid" class="gallery-grid-pro reveal delay-1"></div>
-  <button class="gallery-arrow next" id="gallery-next" aria-label="Next photo"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button>
-</div>
-</section>
 
-<!-- TESTIMONIALS -->
-<section id="testimonials-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="testimonials" style="display:none">
-  <div class="reveal mb-11">
-    <div class="eyebrow">reviews.log</div>
-    <h2 class="section-title">What clients say</h2>
-  </div>
-  <div id="testimonials-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"></div>
-</section>
+
+
 
 <!-- ENQUIRY FORM -->
 <section id="enquiry" class="max-w-[720px] mx-auto px-4 sm:px-8 py-20">
@@ -763,6 +777,7 @@ document.getElementById('about-text-2').querySelectorAll('*').forEach(el => el.s
   document.getElementById('contact-address-text').textContent = s.address;
   document.getElementById('map-iframe').src = s.map_embed_url;
   document.getElementById('whatsapp-float').href = 'https://wa.me/' + s.whatsapp_number + '?text=' + encodeURIComponent("Hi, I'd like to discuss a web development project");
+ document.getElementById('chatbot-whatsapp-link').href = 'https://wa.me/' + s.whatsapp_number + '?text=' + encodeURIComponent("Hi, I'd like to discuss a web development project");
   document.getElementById('footer-year').textContent = new Date().getFullYear();
 
   // Services — visible only when the admin toggle is on AND at least one item exists
