@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Last Benchers Association — Web Development Studio</title>
+<title>Last Benchers Association — Department of Digital Empowerment</title>
 <meta name="description" content="Last Benchers Association is a student-run web development studio building fast, custom websites and web apps for schools, colleges and small businesses."/>
 <meta name="robots" content="index, follow"/>
 <link rel="icon" href="data:,"/>
@@ -87,6 +87,29 @@
   #whatsapp-float svg{width:28px;height:28px;fill:#fff}
   @keyframes waPulse{0%,100%{box-shadow:0 10px 30px rgba(37,211,102,.45)}50%{box-shadow:0 10px 30px rgba(37,211,102,.75),0 0 0 10px rgba(37,211,102,.12)}}
 
+#chatbot-launcher{position:fixed;right:22px;bottom:22px;z-index:999;width:56px;height:56px;border-radius:14px;background:var(--gradient);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 30px rgba(246,26,168,.35);cursor:pointer;transition:var(--transition)}
+#chatbot-launcher:hover{transform:translateY(-3px)}
+#chatbot-launcher svg{width:26px;height:26px;stroke:#fff}
+#chatbot-panel{position:fixed;right:22px;bottom:92px;z-index:1000;width:340px;max-width:calc(100vw - 44px);height:460px;max-height:70vh;background:var(--paper);border:1px solid var(--border);border-radius:16px;box-shadow:0 24px 60px rgba(15,17,21,.25);display:none;flex-direction:column;overflow:hidden}
+#chatbot-panel.active{display:flex}
+.chatbot-head{display:flex;align-items:center;gap:10px;padding:.9rem 1.1rem;background:var(--ink);color:#fff;flex-shrink:0}
+.chatbot-dot{width:8px;height:8px;border-radius:50%;background:#28C840;flex-shrink:0}
+.chatbot-title{font-family:var(--font-display);font-weight:700;font-size:.92rem}
+.chatbot-sub{font-family:var(--font-mono);font-size:.66rem;color:#8FD19E}
+.chatbot-head button{margin-left:auto;background:none;border:none;color:#fff;font-size:20px;cursor:pointer;opacity:.7}
+.chatbot-head button:hover{opacity:1}
+.chatbot-messages{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:.7rem;background:var(--paper-alt)}
+.chatbot-msg{max-width:85%;padding:.6rem .85rem;border-radius:12px;font-size:.83rem;line-height:1.5}
+.chatbot-msg.bot{align-self:flex-start;background:var(--paper);border:1px solid var(--border);border-bottom-left-radius:2px;color:var(--body-text)}
+.chatbot-msg.user{align-self:flex-end;background:var(--gradient);color:#fff;border-bottom-right-radius:2px}
+.chatbot-form{display:flex;gap:8px;padding:.8rem;border-top:1px solid var(--border);background:var(--paper);flex-shrink:0}
+.chatbot-form input{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:.6rem .8rem;font-size:.85rem;font-family:var(--font-body);background:var(--paper);color:var(--heading)}
+.chatbot-form input:focus{outline:none;border-color:var(--pink)}
+.chatbot-form button{width:38px;height:38px;border-radius:10px;border:none;background:var(--gradient);color:#fff;font-weight:700;cursor:pointer;flex-shrink:0}
+@media(max-width:480px){#chatbot-panel{right:12px;bottom:82px}}
+
+
+ 
   /* ── dark-mode toggle ── */
   #theme-toggle{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--paper);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
   #theme-toggle svg{width:17px;height:17px;stroke:var(--heading);fill:none;stroke-width:2}
@@ -234,6 +257,24 @@
   <img id="lightboxImg" src="" alt="">
 </div>
 
+<!-- CHATBOT WIDGET -->
+<div id="chatbot-launcher" aria-label="Chat with Benchy">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+</div>
+<div id="chatbot-panel">
+  <div class="chatbot-head">
+    <span class="chatbot-dot"></span>
+    <div><div class="chatbot-title">Benchy</div><div class="chatbot-sub">LBA Assistant &bull; online</div></div>
+    <button id="chatbot-close" aria-label="Close chat">&times;</button>
+  </div>
+  <div id="chatbot-messages" class="chatbot-messages"></div>
+  <form id="chatbot-form" class="chatbot-form">
+    <input id="chatbot-input" type="text" placeholder="Type a message…" autocomplete="off" required>
+    <button type="submit" aria-label="Send">→</button>
+  </form>
+</div>
+
+ 
 <!-- NAV -->
 <nav id="site-nav">
   <div class="max-w-[1240px] mx-auto px-4 sm:px-8 py-3 flex items-center justify-between gap-3">
@@ -833,6 +874,62 @@ if (!sessionStorage.getItem('lba_booted')) {
   setTimeout(()=>{ clearInterval(bootInterval); boot.style.opacity='0'; boot.style.visibility='hidden'; setTimeout(()=>{ boot.style.display='none'; sessionStorage.setItem('lba_booted','true'); },600); }, 1050);
 } else { clearInterval(bootInterval); boot.style.display='none'; }
 
+
+/* ═══════════════════════ CHATBOT WIDGET ═══════════════════════ */
+(function initChatbot(){
+  const launcher = document.getElementById('chatbot-launcher');
+  const panel = document.getElementById('chatbot-panel');
+  const closeBtn = document.getElementById('chatbot-close');
+  const messagesEl = document.getElementById('chatbot-messages');
+  const form = document.getElementById('chatbot-form');
+  const input = document.getElementById('chatbot-input');
+  let history = [];
+  let opened = false;
+
+  function addBubble(text, sender){
+    const div = document.createElement('div');
+    div.className = 'chatbot-msg ' + sender;
+    div.innerHTML = esc(text).replace(/\n/g,'<br>');
+    messagesEl.appendChild(div);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  launcher.addEventListener('click', () => {
+    panel.classList.add('active');
+    if (!opened) {
+      opened = true;
+      addBubble("Hi! I'm Benchy 👋 I can help you get a website or web app built. What's your name?", 'bot');
+    }
+  });
+  closeBtn.addEventListener('click', () => panel.classList.remove('active'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text || !API_URL) return;
+    addBubble(text, 'user');
+    history.push({ role: 'user', parts: [{ text }] });
+    input.value = ''; input.disabled = true;
+
+    try {
+      const res = await fetch(API_URL, {
+        method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'chatMessage', history })
+      });
+      const json = await res.json();
+      if (json && json.ok) {
+        addBubble(json.reply, 'bot');
+        history.push({ role: 'model', parts: [{ text: json.reply }] });
+      } else {
+        addBubble("Sorry, I'm having trouble connecting right now — please use the enquiry form below instead.", 'bot');
+      }
+    } catch (err) {
+      addBubble("Sorry, I'm having trouble connecting right now — please use the enquiry form below instead.", 'bot');
+    }
+    input.disabled = false; input.focus();
+  });
+})();
+ 
 loadData();
 </script>
 </body>
