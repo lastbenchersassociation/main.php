@@ -875,21 +875,28 @@ function hideBoot(){
   setTimeout(()=>{ boot.style.display = 'none'; }, 600);
 }
 
-const MIN_BOOT_MS = 1800;  // loader kam se kam itni der dikhega, chahe data turant aa jaye
-const MAX_BOOT_MS = 6000;  // backend slow/down ho toh bhi itne max wait ke baad site khul jayegi
+const MIN_BOOT_MS = 900;   // keep the animation visible at least this long, so it never "flashes"
+const MAX_BOOT_MS = 4000;  // hard cap — never block real users if the backend is slow or down
 
+if (sessionStorage.getItem('lba_booted')) {
+  // already booted once this tab session — skip the screen, fetch quietly, then render
+  boot.style.display = 'none';
+  clearInterval(bootInterval);
+  loadData().then(render).catch(render);
+} else {
+  const dataReady = loadData();                          // fetch starts immediately, boot screen already visible
+  const minDelay  = new Promise(res => setTimeout(res, MIN_BOOT_MS));
+  const maxDelay  = new Promise(res => setTimeout(res, MAX_BOOT_MS));
 
- const dataReady = loadData();
-const minDelay  = new Promise(res => setTimeout(res, MIN_BOOT_MS));
-const maxDelay  = new Promise(res => setTimeout(res, MAX_BOOT_MS));
-
-Promise.race([
-  Promise.all([dataReady, minDelay]),
-  maxDelay
-]).then(() => {
-  render();
-  hideBoot();
-});
+  Promise.race([
+    Promise.all([dataReady, minDelay]),   // normal case: wait for both fetch + minimum animation time
+    maxDelay                              // escape hatch: never wait longer than this
+  ]).then(() => {
+    render();                             // paint with live data (or fallback, if it timed out)
+    sessionStorage.setItem('lba_booted', 'true');
+    hideBoot();
+  });
+}
 
 
 /* ═══════════════════════ CHATBOT WIDGET ═══════════════════════ */
