@@ -920,12 +920,12 @@ if (!sessionStorage.getItem('lba_booted')) {
       if (json && json.ok) {
         addBubble(json.reply, 'bot');
         history.push({ role: 'model', parts: [{ text: json.reply }] });
-      } else {
-        addBubble("Sorry, I'm having trouble connecting right now — please use the enquiry form below instead.", 'bot');
-      }
+     } else {
+  addBubble("DEBUG backend error: " + JSON.stringify(json), 'bot');
+}
     } catch (err) {
-      addBubble("Sorry, I'm having trouble connecting right now — please use the enquiry form below instead.", 'bot');
-    }
+  addBubble("DEBUG: " + err.message, 'bot');
+}
     input.disabled = false; input.focus();
   });
 })();
