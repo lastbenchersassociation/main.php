@@ -401,7 +401,7 @@
       <p class="text-[1.05rem] max-w-[520px] mb-9" id="hero-desc">LBA is a student-run web development studio — we design, build and ship production-grade websites for schools, colleges and small businesses.</p>
       <div class="flex gap-4 flex-wrap mb-2">
         <a class="btn-primary" href="#enquiry">Book a Free Consultation</a>
-        <a class="btn-secondary" href="#services">$ view services</a>
+        <a class="btn-secondary" href="#services">&lt;/&gt; view services</a>
       </div>
       <div class="stat-strip">
         <span><b id="stat1-num">180+</b> <span id="stat1-label">projects shipped</span></span>
@@ -453,7 +453,7 @@
 <section class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-24">
   <div class="reveal grid md:grid-cols-[1.2fr_.8fr] gap-10 items-start">
     <div>
-      <div class="eyebrow">why lba</div>
+      <div class="eyebrow">WHY LBA</div>
       <h2 class="section-title mb-4">Agency-grade delivery, without the agency overhead</h2>
       <p class="max-w-[600px]">High-quality web infrastructure shouldn't be reserved for institutions with big budgets. We run a lean, code-first process — version control, staging environments, and real QA — so every school and small business we work with gets a website engineered the same way a funded startup's is.</p>
     </div>
@@ -477,7 +477,7 @@
 <!-- SERVICES -->
 <section id="services" class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-20">
   <div class="reveal mb-11">
-    <div class="eyebrow">what we do</div>
+    <div class="eyebrow">WHAT WE DO</div>
     <h2 class="section-title mb-2">Core Services</h2>
     <p class="max-w-[580px]">No branding fluff, no scope creep — just websites and web applications engineered properly, from first commit to production.</p>
   </div>
@@ -489,7 +489,7 @@
 <!-- CLIENTS TRUST STRIP -->
 <section id="clients-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-24" style="display:none" data-section="clients">
   <div class="reveal mb-8">
-    <div class="eyebrow">trusted by</div>
+    <div class="eyebrow">TRUSTED BY</div>
     <h2 class="text-xl font-bold" id="clients-heading">Institutions &amp; businesses we've built for</h2>
   </div>
  
@@ -510,7 +510,7 @@
 <!-- ABOUT -->
 <section id="about" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20">
   <div class="reveal mb-11">
-    <div class="eyebrow">about us</div>
+    <div class="eyebrow">ABOUT US</div>
     <h2 class="section-title">A team obsessed with shipping clean code</h2>
   </div>
   <div class="grid md:grid-cols-[.8fr_1.2fr] gap-12 items-start">
@@ -530,7 +530,7 @@
  <!-- GALLERY -->
 <section id="gallery-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="gallery" style="display:none">
   <div class="reveal mb-11">
-    <div class="eyebrow">WHY Last Benchers Association</div>
+    <div class="eyebrow">OUR IMPACT</div>
     <h2 class="section-title mb-2">Bridging the Digital Divide for Local Institutions</h2>
     <p class="max-w-[580px]">At Last Benchers Association, we believe that high-quality digital infrastructure shouldn't be a luxury reserved only for elite, high-budget institutions. Every small school and local educational center deserves a strong online presence to connect with students, showcase their work, and streamline admissions.</p>
   </div>
@@ -545,16 +545,52 @@
 <!-- TESTIMONIALS -->
 <section id="testimonials-section" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20" data-section="testimonials" style="display:none">
   <div class="reveal mb-11">
-    <div class="eyebrow">reviews.log</div>
+    <div class="eyebrow">CLIENT REVIEWS</div>
     <h2 class="section-title">What clients say</h2>
   </div>
   <div id="testimonials-grid" class="grid gap-7" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr))"></div>
 </section>
 
+
+ <!-- ENQUIRY FORM -->
+<section id="enquiry" class="max-w-[720px] mx-auto px-4 sm:px-8 py-20">
+  <div class="reveal text-center mb-9">
+    <div class="eyebrow" style="justify-content:center">TALK TO OUR TEAM</div>
+    <h2 class="section-title mb-3">Book a free consultation</h2>
+    <p class="max-w-[520px] mx-auto">Tell us what you want to build. We'll get back to you within one business day.</p>
+  </div>
+  <div class="card p-7 sm:p-11 reveal delay-1">
+    <div class="mb-6 pb-4 flex items-center gap-2" style="border-bottom:1px dashed var(--border)">
+      <span class="term-dot" style="background:#FF5F57;width:8px;height:8px"></span>
+      <span class="term-dot" style="background:#FEBC2E;width:8px;height:8px"></span>
+      <span class="term-dot" style="background:#28C840;width:8px;height:8px"></span>
+      <span class="font-mono text-xs text-[var(--body-text)] ml-2">POST /enquiries</span>
+    </div>
+    <form id="enquiry-form">
+      <div class="grid sm:grid-cols-2 gap-4 mb-6">
+        <div class="form-field"><label class="block mb-1">full_name</label><input id="eq-name" required type="text" placeholder="Jane Doe"/></div>
+        <div class="form-field"><label class="block mb-1">phone</label><input id="eq-phone" required type="tel" placeholder="+91 98765 43210"/></div>
+        <div class="form-field sm:col-span-2"><label class="block mb-1">email</label><input id="eq-email" required type="email" placeholder="jane@company.com"/></div>
+        <div class="form-field sm:col-span-2"><label class="block mb-1">service</label>
+          <select id="eq-service">
+            <option>Custom Web Development</option><option>Web Application / Dashboard</option>
+            <option>E-Commerce Development</option><option>API / Backend Engineering</option>
+            <option>Performance &amp; SEO</option><option>Website Care &amp; Maintenance</option><option>Other</option>
+          </select>
+        </div>
+        <div class="form-field sm:col-span-2"><label class="block mb-1">message</label><textarea id="eq-message" rows="4" placeholder="Tell us about your project, timeline & budget..."></textarea></div>
+      </div>
+      <button class="btn-primary w-full justify-center" type="submit" id="eq-submit-btn">Send Enquiry →</button>
+      <p id="eq-status" class="text-sm text-center mt-3 font-mono"></p>
+    </form>
+  </div>
+</section>
+
+ 
  
   <!-- SOCIAL MEDIA UPDATES -->
 <section id="social" class="social-embeds-section reveal">
-  <div class="eyebrow" style="justify-content:center">stay in touch</div>
+  <div class="eyebrow" style="justify-content:center">STAY IN TOUCH</div>
   <h2 class="section-title mb-3" style="text-align:center">Social Media Updates</h2>
   <p class="social-sub">Live from Instagram and Facebook, plus the latest posts from our own studio — updates automatically, no manual editing required.</p>
 
@@ -594,47 +630,10 @@
  
 
 
-
-
-
-<!-- ENQUIRY FORM -->
-<section id="enquiry" class="max-w-[720px] mx-auto px-4 sm:px-8 py-20">
-  <div class="reveal text-center mb-9">
-    <div class="eyebrow" style="justify-content:center">let's talk</div>
-    <h2 class="section-title mb-3">Book a free consultation</h2>
-    <p class="max-w-[520px] mx-auto">Tell us what you want to build. We'll get back to you within one business day.</p>
-  </div>
-  <div class="card p-7 sm:p-11 reveal delay-1">
-    <div class="mb-6 pb-4 flex items-center gap-2" style="border-bottom:1px dashed var(--border)">
-      <span class="term-dot" style="background:#FF5F57;width:8px;height:8px"></span>
-      <span class="term-dot" style="background:#FEBC2E;width:8px;height:8px"></span>
-      <span class="term-dot" style="background:#28C840;width:8px;height:8px"></span>
-      <span class="font-mono text-xs text-[var(--body-text)] ml-2">POST /enquiries</span>
-    </div>
-    <form id="enquiry-form">
-      <div class="grid sm:grid-cols-2 gap-4 mb-6">
-        <div class="form-field"><label class="block mb-1">full_name</label><input id="eq-name" required type="text" placeholder="Jane Doe"/></div>
-        <div class="form-field"><label class="block mb-1">phone</label><input id="eq-phone" required type="tel" placeholder="+91 98765 43210"/></div>
-        <div class="form-field sm:col-span-2"><label class="block mb-1">email</label><input id="eq-email" required type="email" placeholder="jane@company.com"/></div>
-        <div class="form-field sm:col-span-2"><label class="block mb-1">service</label>
-          <select id="eq-service">
-            <option>Custom Web Development</option><option>Web Application / Dashboard</option>
-            <option>E-Commerce Development</option><option>API / Backend Engineering</option>
-            <option>Performance &amp; SEO</option><option>Website Care &amp; Maintenance</option><option>Other</option>
-          </select>
-        </div>
-        <div class="form-field sm:col-span-2"><label class="block mb-1">message</label><textarea id="eq-message" rows="4" placeholder="Tell us about your project, timeline & budget..."></textarea></div>
-      </div>
-      <button class="btn-primary w-full justify-center" type="submit" id="eq-submit-btn">Send Enquiry →</button>
-      <p id="eq-status" class="text-sm text-center mt-3 font-mono"></p>
-    </form>
-  </div>
-</section>
-
   
 <!-- CONTACT -->
 <section id="contact" class="max-w-[1200px] mx-auto px-4 sm:px-8 py-20">
-  <div class="reveal mb-11"><div class="eyebrow">get in touch</div><h2 class="section-title">Visit or reach us</h2></div>
+  <div class="reveal mb-11"><div class="eyebrow">GET IN TOUCH</div><h2 class="section-title">Visit or reach us</h2></div>
   <div class="grid md:grid-cols-[.9fr_1.1fr] gap-6 md:gap-12">
     <div class="flex flex-col gap-4 reveal delay-1">
       <a id="contact-email-link" class="card p-4 sm:p-6 flex items-center gap-3 sm:gap-4" href="#">
@@ -678,7 +677,7 @@
     <div class="flex gap-3 flex-wrap justify-center" id="social-links"></div>
     <div class="text-sm flex flex-wrap justify-center gap-7 border-t pt-7 w-full font-mono" style="border-color:var(--border)">
       <p>© <span id="footer-year"></span> Last Benchers Association. All rights reserved.</p>
-      <p>Built by <strong>&lt;LBA/&gt; Department Of Degital Empowerment</strong></p>
+      <p>Built by <strong>&lt;LBA/&gt; Department Of Digital Empowerment</strong></p>
     </div>
   </div>
 </footer>
@@ -741,9 +740,38 @@ const FALLBACK = {
 let DATA = JSON.parse(JSON.stringify(FALLBACK));
 
 /* ═══════════════════════ RENDER ═══════════════════════ */
-function esc(s){ return (s===undefined||s===null) ? "" : String(s); }
+ function esc(s){
+  return (s===undefined||s===null) ? "" : String(s).replace(/[&<>"']/g, function(c){
+    return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+  });
+}
 function initials(name){
   return esc(name).split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase() || "•";
+}
+
+function sanitizeHTML(html){
+  if (!html) return '';
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  const allowedTags = new Set(['B','STRONG','I','EM','BR','A','SPAN']);
+  (function clean(node){
+    [...node.childNodes].forEach(child => {
+      if (child.nodeType === 1) {
+        if (!allowedTags.has(child.tagName)) {
+          while (child.firstChild) node.insertBefore(child.firstChild, child);
+          node.removeChild(child);
+          return;
+        }
+        [...child.attributes].forEach(attr => {
+          if (!(child.tagName === 'A' && attr.name === 'href')) {
+            child.removeAttribute(attr.name);
+          }
+        });
+        clean(child);
+      }
+    });
+  })(tmp);
+  return tmp.innerHTML;
 }
 
 function render(){
@@ -754,21 +782,19 @@ function render(){
   document.title = s.site_title + " — Web Development Studio";
 
   
-  document.getElementById('hero-eyebrow').textContent = s.hero_eyebrow;
-  document.getElementById('hero-title').innerHTML = s.hero_title;
+   document.getElementById('hero-eyebrow').textContent = s.hero_eyebrow;
+  document.getElementById('hero-title').innerHTML = sanitizeHTML(s.hero_title);
   document.getElementById('hero-desc').textContent = s.hero_desc;
   document.getElementById('stat1-num').textContent = s.stat1_num;
-  document.getElementById('stat1-label').innerHTML = s.stat1_label;
+  document.getElementById('stat1-label').innerHTML = sanitizeHTML(s.stat1_label);
   document.getElementById('stat2-num').textContent = s.stat2_num;
-  document.getElementById('stat2-label').innerHTML = s.stat2_label;
+  document.getElementById('stat2-label').innerHTML = sanitizeHTML(s.stat2_label);
   document.getElementById('stat3-num').textContent = s.stat3_num;
-  document.getElementById('stat3-label').innerHTML = s.stat3_label;
+  document.getElementById('stat3-label').innerHTML = sanitizeHTML(s.stat3_label);
 
-  document.getElementById('about-text-1').innerHTML = s.about_text_1;
-document.getElementById('about-text-1').querySelectorAll('*').forEach(el => el.style.color = '');
+  document.getElementById('about-text-1').innerHTML = sanitizeHTML(s.about_text_1);
 document.getElementById('about-quote').textContent = s.about_quote;
-document.getElementById('about-text-2').innerHTML = s.about_text_2;
-document.getElementById('about-text-2').querySelectorAll('*').forEach(el => el.style.color = '');
+document.getElementById('about-text-2').innerHTML = sanitizeHTML(s.about_text_2);
 
   document.getElementById('contact-email-link').href = 'mailto:' + s.email;
   document.getElementById('contact-email-text').textContent = s.email;
