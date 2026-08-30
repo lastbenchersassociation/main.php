@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,8 +42,8 @@
   }
   *{margin:0;padding:0;box-sizing:border-box}
   ::selection{background:var(--pink);color:#fff}
-  html{scroll-behavior:smooth;overflow-x:hidden}
-  body{font-family:var(--font-body);background:var(--body-bg);color:var(--body-text);line-height:1.65;overflow-x:hidden;transition:background .35s ease,color .35s ease}
+  html{scroll-behavior:smooth;overflow-x:clip}
+  body{font-family:var(--font-body);background:var(--body-bg);color:var(--body-text);line-height:1.65;overflow-x:clip;transition:background .35s ease,color .35s ease}
   h1,h2,h3,h4{font-family:var(--font-display);letter-spacing:-.01em;color:var(--heading)}
   a{color:inherit;text-decoration:none;transition:var(--transition)}
   img{max-width:100%;display:block}
@@ -176,6 +177,29 @@
   .svc-head{display:none}
   .svc-body{padding:1.9rem 1.6rem 1.7rem}
   .svc-num{display:inline-flex;align-items:center;justify-content:center;width:46px;height:46px;border-radius:12px;background:var(--bg-pink);color:var(--hover-pink);font-family:var(--font-display);font-weight:700;font-size:1.05rem;margin-bottom:1rem}
+  
+  /* ── SERVICES: mobile sticky-stack effect ── */
+@media(max-width:768px){
+  #services-grid{
+    display:flex !important;
+    flex-direction:column;
+    gap:2rem;
+  }
+  #services-grid .svc-card{
+    position:sticky !important;
+    min-height:220px;
+    width:100%;
+  }
+  #services-grid .svc-card:nth-child(1){ top:80px;  z-index:1; }
+  #services-grid .svc-card:nth-child(2){ top:104px; z-index:2; }
+  #services-grid .svc-card:nth-child(3){ top:128px; z-index:3; }
+  #services-grid .svc-card:nth-child(4){ top:152px; z-index:4; }
+  #services-grid .svc-card:nth-child(5){ top:176px; z-index:5; }
+  #services-grid .svc-card:nth-child(6){ top:200px; z-index:6; }
+  #services-grid .svc-card:nth-child(n+7){ top:220px; z-index:7; }
+}
+  
+  
 
   /* ── about ── */
   .about-logo-card .frame{width:100%;aspect-ratio:1/1;border-radius:var(--radius-sm);background:var(--ink);border:1px solid var(--term-border);display:flex;align-items:center;justify-content:center;color:#8FD19E;font-family:var(--font-mono);font-weight:700;font-size:1.2rem;flex-direction:column;gap:.4rem;text-align:center;padding:1rem}
@@ -313,16 +337,23 @@
 }
   
   
-  
-  /* ── BLOG — parallax stacking cards ── */
-.blog-stack{position:relative;padding-bottom:5rem}
-.blog-stack-item{position:sticky;top:96px;z-index:calc(var(--i) + 1);padding-bottom:34px}
-.blog-stack-item .card{
-  overflow:hidden;
-  transform-origin:top center;
-  transition:transform .2s ease-out, filter .2s ease-out, box-shadow .2s ease-out;
-  will-change:transform, filter;
+  /* ── BLOG — sticky stacking cards (pc + mobile) ── */
+.blog-stack{
+  display:flex;
+  flex-direction:column;
+  gap:2.5rem;
+  padding-bottom:2rem;
 }
+.blog-stack-item{
+  position:sticky;
+  overflow:hidden;
+}
+.blog-stack-item:nth-child(1){ top:84px;  z-index:1; }
+.blog-stack-item:nth-child(2){ top:108px; z-index:2; }
+.blog-stack-item:nth-child(3){ top:132px; z-index:3; }
+.blog-stack-item:nth-child(4){ top:156px; z-index:4; }
+.blog-stack-item:nth-child(5){ top:180px; z-index:5; }
+
 .blog-stack-grid{display:grid;grid-template-columns:1.15fr 1fr;min-height:300px}
 .blog-stack-text{padding:1.8rem 2rem;display:flex;flex-direction:column;justify-content:center;gap:.3rem}
 .blog-stack-num{font-family:var(--font-display);font-weight:800;font-size:.95rem;color:var(--pink)}
@@ -332,9 +363,17 @@
 .blog-stack-meta{font-family:var(--font-body);font-weight:600;font-size:.76rem;color:var(--body-text);opacity:.8}
 .blog-stack-snip{font-size:.88rem;color:var(--body-text);line-height:1.65;margin-top:.4rem;
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.blog-stack-readmore{margin-top:.9rem;font-family:var(--font-display);font-weight:700;font-size:.82rem;
-  color:var(--hover-pink);display:inline-flex;align-items:center;gap:6px;width:fit-content}
-.blog-stack-readmore:hover{gap:10px;color:var(--hover-blue)}
+.blog-stack-readmore{
+  margin-top:1rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:.7rem 1.4rem;
+  font-family:var(--font-display);font-weight:700;font-size:.82rem;
+  border-radius:8px;
+  background:var(--gradient);color:#fff;
+  width:fit-content;
+  box-shadow:0 8px 20px rgba(246,26,168,.25);
+}
+.blog-stack-readmore:hover{gap:12px;filter:brightness(1.06)}
 .blog-stack-img{position:relative;overflow:hidden;background:var(--paper-alt)}
 .blog-stack-img img{width:100%;height:100%;object-fit:cover;display:block}
 
@@ -342,8 +381,14 @@
   .blog-stack-grid{grid-template-columns:1fr}
   .blog-stack-img{aspect-ratio:16/9;order:-1}
   .blog-stack-text{padding:1.4rem 1.3rem}
-  .blog-stack-item{top:74px}
+  .blog-stack-item:nth-child(1){ top:68px; }
+  .blog-stack-item:nth-child(2){ top:88px; }
+  .blog-stack-item:nth-child(3){ top:108px; }
+  .blog-stack-item:nth-child(4){ top:128px; }
+  .blog-stack-item:nth-child(5){ top:148px; }
 }
+  
+ 
   
 </style>
 </head>
@@ -584,8 +629,8 @@
   </div>
   <div id="blog-stack" class="blog-stack"></div>
 </section>
-  
-  <script>
+
+<script>
 function showBlogStack(json){
   const entries = (json.feed && json.feed.entry) || [];
   if (!entries.length) return;
@@ -602,26 +647,7 @@ function showBlogStack(json){
     if (!img && en.content && en.content.$t){ const m = en.content.$t.match(/<img[^>]+src="([^"]+)/); if (m) img = m[1]; }
     const num = String(i+1).padStart(2,'0');
     return `
-      <article class="blog-stack-card" style="--i:${i}">
-        <div class="card">
-          <div cla<script>
-function showBlogStack(json){
-  const entries = (json.feed && json.feed.entry) || [];
-  if (!entries.length) return;
-  const section = document.getElementById('blog');
-  const stack = document.getElementById('blog-stack');
-
-  stack.innerHTML = entries.slice(0,5).map((en, i) => {
-    const title = en.title.$t;
-    const link = en.link.find(l => l.rel === 'alternate').href;
-    const date = new Date(en.published.$t).toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
-    const author = en.author[0].name.$t;
-    const snip = en.summary ? en.summary.$t.replace(/<[^>]+>/g,'').substring(0,180) + '…' : '';
-    let img = en.media$thumbnail ? en.media$thumbnail.url.replace('s72-c','s800') : '';
-    if (!img && en.content && en.content.$t){ const m = en.content.$t.match(/<img[^>]+src="([^"]+)/); if (m) img = m[1]; }
-    const num = String(i+1).padStart(2,'0');
-    return `
-      <div class="blog-stack-item" style="--i:${i}">
+      <div class="blog-stack-item">
         <div class="card">
           <div class="svc-head">
             <span class="term-dot" style="background:#FF5F57"></span>
@@ -635,7 +661,7 @@ function showBlogStack(json){
               <h3 class="blog-stack-title"><a href="${link}" target="_blank" rel="noopener">${title}</a></h3>
               <p class="blog-stack-meta">By ${author} · ${date}</p>
               <p class="blog-stack-snip">${snip}</p>
-              <a class="blog-stack-readmore" href="${link}" target="_blank" rel="noopener">$ read --full →</a>
+              <a class="blog-stack-readmore" href="${link}" target="_blank" rel="noopener">View full post →</a>
             </div>
             <div class="blog-stack-img">${img ? `<img src="${img}" alt="${title}" loading="lazy">` : ''}</div>
           </div>
@@ -644,48 +670,6 @@ function showBlogStack(json){
   }).join('');
 
   section.style.display = 'block';
-  initBlogStackParallax();
-}
-
-/* Scroll-driven depth effect: as the next card pins over the current
-   one, the current card shrinks slightly and dims — like it's being
-   pushed back, not just covered flat. Skipped on touch/small screens
-   where the subtlety is wasted and the extra reflow cost isn't worth it. */
-function initBlogStackParallax(){
-  const items = Array.from(document.querySelectorAll('.blog-stack-item'));
-  if (!items.length) return;
-  const isDesktop = () => window.matchMedia('(min-width:769px)').matches;
-
-  function update(){
-    if (!isDesktop()){
-      items.forEach(it => { const c = it.querySelector('.card'); c.style.transform=''; c.style.filter=''; c.style.boxShadow=''; });
-      return;
-    }
-    const stickyTop = 96;
-    items.forEach((item, i) => {
-      const card = item.querySelector('.card');
-      const next = items[i+1];
-      if (!next){ card.style.transform=''; card.style.filter=''; card.style.boxShadow=''; return; }
-      const gap = next.getBoundingClientRect().top - stickyTop;
-      const travel = item.offsetHeight || 1;
-      const progress = Math.min(1, Math.max(0, 1 - gap / travel));
-      const scale = 1 - progress * 0.05;
-      const dropY = progress * 10;
-      const brightness = 1 - progress * 0.18;
-      card.style.transform = `scale(${scale}) translateY(${dropY}px)`;
-      card.style.filter = `brightness(${brightness})`;
-      card.style.boxShadow = `0 ${18+progress*26}px ${44+progress*36}px rgba(15,17,21,${0.12+progress*0.22})`;
-    });
-  }
-
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { update(); ticking = false; });
-  }, { passive:true });
-  window.addEventListener('resize', update);
-  update();
 }
 </script>
 <script src="https://teameksoch.blogspot.com/feeds/posts/default?alt=json-in-script&callback=showBlogStack&max-results=5"></script>
