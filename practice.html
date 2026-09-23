@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LBA Code Editor - Modern Online Web Playground</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f4f3ff',
+                            100: '#ebe9fe',
+                            200: '#d9d6fe',
+                            300: '#bdb4fe',
+                            400: '#9b8afb',
+                            500: '#7a5af8',
+                            600: '#6331f6',
+                            700: '#5423e0',
+                            800: '#451cb9',
+                            900: '#3a1997',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'JetBrains Mono', 'Monaco', 'Consolas', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts for Inter & Code Monospace -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Custom scrollbars */
+        .dark ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+        }
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Light mode scrollbars */
+        html:not(.dark) ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        html:not(.dark) ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        html:not(.dark) ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .code-textarea {
+            tab-size: 4;
+            -moz-tab-size: 4;
+            white-space: pre;
+            word-break: normal;
+        }
+
+        /* Smooth line highlighting effect */
+        .dark .editor-container:focus-within {
+            border-color: #6331f6;
+            box-shadow: 0 0 0 2px rgba(99, 49, 246, 0.25);
+        }
+        html:not(.dark) .editor-container:focus-within {
+            border-color: #7a5af8;
+            box-shadow: 0 0 0 2px rgba(122, 90, 248, 0.2);
+        }
+
+        /* Device preview frame transitions */
+        .preview-frame-container {
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 dark:bg-slate-950 dark:text-slate-100 font-sans h-screen w-screen overflow-hidden flex flex-col antialiased selection:bg-brand-500 selection:text-white transition-colors duration-200">
+
+    <!-- Navigation Header -->
+    <header class="h-14 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-4 flex items-center justify-between z-30 shrink-0 transition-colors duration-200">
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-gradient-to-tr from-brand-600 to-indigo-500 rounded-xl shadow-lg shadow-brand-500/20 text-white flex items-center justify-center">
+                <i data-lucide="code-2" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <span class="font-bold text-lg tracking-tight text-slate-800 dark:text-white">LBA</span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-600 dark:text-brand-400 font-medium border border-brand-500/20"> Department Of Digital Empowerment</span>
+                </div>
+                <p class="text-xs text-slate-500 dark:text-slate-400 hidden sm:block">Interactive Front-End Web Playground</p>
+            </div>
+        </div>
+
+        <!-- Center Quick Action Toolbar -->
+        <div class="flex items-center space-x-2 bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 shadow-inner transition-colors duration-200">
+            <button id="btn-run" onclick="triggerUpdatePreview()" title="Run Code (Auto-live is enabled)" class="flex items-center space-x-1.5 px-3 py-1.5 bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold rounded-lg transition-all shadow-md active:scale-95">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+                <span class="hidden md:inline">Run</span>
+            </button>
+            <button id="btn-reset" onclick="loadDefaultTemplate()" title="Reset to Starter Template" class="p-1.5 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-lg transition-all">
+                <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+            <button id="btn-clear" onclick="clearAllCode()" title="Clear All Editors" class="p-1.5 text-slate-600 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 hover:bg-slate-200 dark:hover:bg-slate-700/60 rounded-lg transition-all">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+            <div class="h-4 w-px bg-slate-300 dark:bg-slate-700 mx-1"></div>
+            <button id="btn-copy-all" onclick="copyCombinedCode()" title="Copy Full Project Code" class="flex items-center space-x-1.5 px-2.5 py-1.5 text-slate-700 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700/60 text-xs font-medium rounded-lg transition-all">
+                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                <span class="hidden md:inline">Copy All</span>
+            </button>
+        </div>
+
+        <!-- Right Controls: View Switcher & Theme Toggle -->
+        <div class="flex items-center space-x-2">
+            <!-- View Mode Switcher -->
+            <div class="hidden sm:flex items-center bg-slate-100 dark:bg-slate-800/80 p-1 rounded-xl border border-slate-200 dark:border-slate-700/60 transition-colors duration-200">
+                <button id="btn-layout-split" onclick="setLayout('split')" class="p-1.5 text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-700/80 rounded-lg shadow-sm" title="Side-by-side View">
+                    <i data-lucide="columns" class="w-4 h-4"></i>
+                </button>
+                <button id="btn-layout-tabs" onclick="setLayout('tabs')" class="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg transition-all" title="Tabbed Panel View">
+                    <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                </button>
+                <button id="btn-layout-stacked" onclick="setLayout('stacked')" class="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg transition-all" title="Stacked View">
+                    <i data-lucide="rows" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Auto-sync toggle -->
+            <label class="hidden lg:flex items-center space-x-2 text-xs text-slate-600 dark:text-slate-400 cursor-pointer bg-slate-100 dark:bg-slate-800/50 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors duration-200">
+                <input type="checkbox" id="auto-run-toggle" checked class="rounded border-slate-300 dark:border-slate-600 text-brand-600 focus:ring-brand-500 bg-white dark:bg-slate-900">
+                <span>Auto Update</span>
+            </label>
+
+            <!-- Theme Toggle -->
+            <button id="theme-toggle-btn" onclick="toggleTheme()" class="p-2 text-slate-600 hover:text-amber-500 dark:text-slate-400 dark:hover:text-amber-400 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-all">
+                <i data-lucide="sun" id="theme-icon-sun" class="w-4 h-4 hidden"></i>
+                <i data-lucide="moon" id="theme-icon-moon" class="w-4 h-4"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Workspace -->
+    <main id="workspace" class="flex-1 flex flex-col md:flex-row overflow-hidden p-3 gap-3 relative">
+        
+        <!-- EDITOR SECTION -->
+        <section id="editor-section" class="w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300">
+            
+            <!-- Mobile/Tabbed Panel Header Switcher -->
+            <div id="mobile-tab-bar" class="hidden flex items-center bg-slate-100 dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-slate-800 shrink-0 transition-colors duration-200">
+                <button onclick="switchTab('html')" id="tab-btn-html" class="flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/30">
+                    <i data-lucide="file-code-2" class="w-3.5 h-3.5"></i>
+                    <span>HTML</span>
+                </button>
+                <button onclick="switchTab('css')" id="tab-btn-css" class="flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+                    <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+                    <span>CSS</span>
+                </button>
+                <button onclick="switchTab('js')" id="tab-btn-js" class="flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200">
+                    <i data-lucide="terminal" class="w-3.5 h-3.5"></i>
+                    <span>JavaScript</span>
+                </button>
+            </div>
+
+            <!-- HTML Editor Box -->
+            <div id="box-html" class="editor-container flex-1 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-sm dark:shadow-lg transition-all min-h-0">
+                <!-- Editor Header -->
+                <div class="h-9 px-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2 text-orange-600 dark:text-orange-400 font-semibold">
+                        <i data-lucide="file-code-2" class="w-4 h-4"></i>
+                        <span>index.html</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="lines-html" class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">1 lines</span>
+                        <button onclick="copySnippet('html')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded transition" title="Copy HTML">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Editor Area -->
+                <div class="flex-1 relative font-mono text-sm flex overflow-hidden min-h-0">
+                    <div id="gutter-html" class="py-3 px-2 bg-slate-100 dark:bg-slate-950/40 text-slate-400 dark:text-slate-600 text-right select-none font-mono text-xs border-r border-slate-200 dark:border-slate-800/50 w-10 shrink-0 overflow-hidden transition-colors duration-200">1</div>
+                    <textarea id="code-html" class="code-textarea flex-1 p-3 bg-transparent text-slate-800 dark:text-slate-200 resize-none focus:outline-none font-mono text-xs leading-relaxed overflow-auto" spellcheck="false" placeholder="<!-- Write HTML here -->"></textarea>
+                </div>
+            </div>
+
+            <!-- CSS Editor Box -->
+            <div id="box-css" class="editor-container flex-1 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-sm dark:shadow-lg transition-all min-h-0">
+                <!-- Editor Header -->
+                <div class="h-9 px-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2 text-sky-600 dark:text-sky-400 font-semibold">
+                        <i data-lucide="palette" class="w-4 h-4"></i>
+                        <span>style.css</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="lines-css" class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">1 lines</span>
+                        <button onclick="copySnippet('css')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded transition" title="Copy CSS">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Editor Area -->
+                <div class="flex-1 relative font-mono text-sm flex overflow-hidden min-h-0">
+                    <div id="gutter-css" class="py-3 px-2 bg-slate-100 dark:bg-slate-950/40 text-slate-400 dark:text-slate-600 text-right select-none font-mono text-xs border-r border-slate-200 dark:border-slate-800/50 w-10 shrink-0 overflow-hidden transition-colors duration-200">1</div>
+                    <textarea id="code-css" class="code-textarea flex-1 p-3 bg-transparent text-slate-800 dark:text-slate-200 resize-none focus:outline-none font-mono text-xs leading-relaxed overflow-auto" spellcheck="false" placeholder="/* Write CSS here */"></textarea>
+                </div>
+            </div>
+
+            <!-- JS Editor Box -->
+            <div id="box-js" class="editor-container flex-1 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-sm dark:shadow-lg transition-all min-h-0">
+                <!-- Editor Header -->
+                <div class="h-9 px-3.5 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2 text-amber-600 dark:text-amber-400 font-semibold">
+                        <i data-lucide="terminal" class="w-4 h-4"></i>
+                        <span>script.js</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="lines-js" class="text-[10px] text-slate-400 dark:text-slate-500 font-mono">1 lines</span>
+                        <button onclick="copySnippet('js')" class="p-1 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded transition" title="Copy JS">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Editor Area -->
+                <div class="flex-1 relative font-mono text-sm flex overflow-hidden min-h-0">
+                    <div id="gutter-js" class="py-3 px-2 bg-slate-100 dark:bg-slate-950/40 text-slate-400 dark:text-slate-600 text-right select-none font-mono text-xs border-r border-slate-200 dark:border-slate-800/50 w-10 shrink-0 overflow-hidden transition-colors duration-200">1</div>
+                    <textarea id="code-js" class="code-textarea flex-1 p-3 bg-transparent text-slate-800 dark:text-slate-200 resize-none focus:outline-none font-mono text-xs leading-relaxed overflow-auto" spellcheck="false" placeholder="// Write JavaScript here"></textarea>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- PREVIEW & CONSOLE SECTION -->
+        <section id="preview-section" class="w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300">
+            
+            <!-- Live Preview Main Box -->
+            <div class="flex-1 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-md dark:shadow-xl min-h-0 transition-colors duration-200">
+                
+                <!-- Preview Toolbar -->
+                <div class="h-10 px-3 bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none gap-2 shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-1.5 mr-2">
+                            <div class="w-3 h-3 rounded-full bg-rose-500/80 border border-rose-600"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-500/80 border border-amber-600"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500/80 border border-emerald-600"></div>
+                        </div>
+                        <span class="font-medium text-slate-700 dark:text-slate-300 hidden sm:inline-block">Live Preview</span>
+                    </div>
+
+                    <!-- Device Mode Selector -->
+                    <div class="flex items-center space-x-1 bg-slate-200/80 dark:bg-slate-900/80 p-0.5 rounded-lg border border-slate-300/60 dark:border-slate-700/60 transition-colors duration-200">
+                        <button onclick="setViewport('responsive')" id="device-responsive" class="px-2 py-1 text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-800 rounded font-medium flex items-center space-x-1 shadow-xs dark:shadow-none" title="Responsive View">
+                            <i data-lucide="maximize" class="w-3 h-3"></i>
+                            <span class="text-[10px] hidden lg:inline">Full</span>
+                        </button>
+                        <button onclick="setViewport('tablet')" id="device-tablet" class="px-2 py-1 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 rounded flex items-center space-x-1" title="Tablet View (768px)">
+                            <i data-lucide="tablet" class="w-3 h-3"></i>
+                            <span class="text-[10px] hidden lg:inline">Tablet</span>
+                        </button>
+                        <button onclick="setViewport('mobile')" id="device-mobile" class="px-2 py-1 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 rounded flex items-center space-x-1" title="Mobile View (375px)">
+                            <i data-lucide="smartphone" class="w-3 h-3"></i>
+                            <span class="text-[10px] hidden lg:inline">Mobile</span>
+                        </button>
+                    </div>
+
+                    <!-- Right Window Action Controls -->
+                    <div class="flex items-center space-x-1.5">
+                        <button onclick="reloadPreviewFrame()" class="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700/50 transition" title="Reload Frame">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="openPreviewNewTab()" class="p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg hover:bg-slate-200 dark:hover:bg-slate-700/50 transition" title="Open in New Tab">
+                            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview Frame Wrapper -->
+                <div class="flex-1 bg-slate-100 dark:bg-slate-950/60 flex justify-center items-center overflow-hidden p-2 relative min-h-0 transition-colors duration-200">
+                    <div id="preview-frame-container" class="preview-frame-container w-full h-full bg-white rounded-xl overflow-hidden shadow-lg dark:shadow-2xl relative border border-slate-200 dark:border-slate-800">
+                        <iframe id="preview-frame" class="w-full h-full border-none bg-white" sandbox="allow-scripts allow-modals allow-forms font-sans"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Console Log Drawer -->
+            <div id="console-drawer" class="h-32 bg-white dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden shadow-sm dark:shadow-lg transition-all shrink-0">
+                <!-- Console Bar -->
+                <div class="h-8 px-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs select-none shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2 text-slate-700 dark:text-slate-300 font-semibold">
+                        <i data-lucide="terminal" class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400"></i>
+                        <span>Console Output</span>
+                        <span id="console-badge" class="px-1.5 py-0.2 text-[10px] rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-mono">0</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="clearConsoleLog()" class="px-2 py-0.5 text-[11px] text-slate-500 hover:text-rose-600 dark:text-slate-400 dark:hover:text-rose-400 transition flex items-center space-x-1">
+                            <i data-lucide="trash" class="w-3 h-3"></i>
+                            <span>Clear</span>
+                        </button>
+                    </div>
+                </div>
+                <!-- Console Stream List -->
+                <div id="console-logs" class="flex-1 p-2.5 font-mono text-xs overflow-y-auto space-y-1 bg-slate-50 dark:bg-slate-950/80 text-slate-800 dark:text-slate-300 min-h-0 transition-colors duration-200">
+                    <div class="text-slate-400 dark:text-slate-500 italic text-[11px]">Console ready. Interactive logs and runtime errors will render here...</div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Notification Toast Floating Alert -->
+    <div id="toast" class="fixed bottom-6 right-6 transform translate-y-12 opacity-0 pointer-events-none transition-all duration-300 flex items-center space-x-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white px-4 py-3 rounded-xl shadow-2xl z-50">
+        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 dark:text-emerald-400" id="toast-icon"></i>
+        <span id="toast-msg" class="text-xs font-medium">Action completed</span>
+    </div>
+
+    <script>
+        // --- Core Application State ---
+        const state = {
+            layout: 'split', // 'split', 'tabs', 'stacked'
+            activeTab: 'html', // 'html', 'css', 'js'
+            theme: 'dark',
+            viewport: 'responsive',
+            autoRun: true,
+            updateTimer: null,
+            logsCount: 0
+        };
+
+        // --- Starter Template Code ---
+        const defaultCode = {
+            html: `<div class="card">
+  <div class="icon-wrap">
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/></svg>
+  </div>
+  <h2>LBA Playground</h2>
+  <p>Customize your HTML, CSS, and JS code in real-time with instant live preview & console feedback!</p>
+  <button id="interactive-btn">
+    <span>Click Me!</span>
+    <span id="counter" class="badge">0</span>
+  </button>
+</div>`,
+            css: `* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f8fafc;
+  padding: 20px;
+}
+
+.card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 32px;
+  border-radius: 24px;
+  max-width: 380px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  transition: transform 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.icon-wrap {
+  width: 64px;
+  height: 64px;
+  background: linear-gradient(135deg, #6331f6, #9b8afb);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  color: white;
+  box-shadow: 0 8px 20px rgba(99, 49, 246, 0.4);
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+p {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+button {
+  background: #6331f6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(99, 49, 246, 0.3);
+}
+
+button:hover {
+  background: #5423e0;
+  transform: scale(1.03);
+}
+
+.badge {
+  background: rgba(255,255,255,0.2);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}`,
+            js: `// Interactive button click logic
+let count = 0;
+const btn = document.getElementById('interactive-btn');
+const counter = document.getElementById('counter');
+
+btn.addEventListener('click', () => {
+  count++;
+  counter.textContent = count;
+  console.log(\`[LBA Editor] Button clicked \${count} times!\`);
+});
+
+console.log("App ready! Start hacking code.");`
+        };
+
+        // --- DOM Elements ---
+        const htmlInput = document.getElementById('code-html');
+        const cssInput = document.getElementById('code-css');
+        const jsInput = document.getElementById('code-js');
+        const previewFrame = document.getElementById('preview-frame');
+        const consoleLogsDiv = document.getElementById('console-logs');
+
+        // --- Initialization ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Check stored theme or default to dark
+            const savedTheme = localStorage.getItem('LBA_theme') || 'dark';
+            applyTheme(savedTheme);
+
+            lucide.createIcons();
+            loadDefaultTemplate();
+            setupTabKeyAndLineNumbers();
+            setupConsoleCapture();
+
+            // Auto run checkbox binding
+            document.getElementById('auto-run-toggle').addEventListener('change', (e) => {
+                state.autoRun = e.target.checked;
+            });
+        });
+
+        // --- Theme Switching Logic ---
+        function applyTheme(targetTheme) {
+            state.theme = targetTheme;
+            const htmlEl = document.documentElement;
+            const sunIcon = document.getElementById('theme-icon-sun');
+            const moonIcon = document.getElementById('theme-icon-moon');
+
+            if (targetTheme === 'dark') {
+                htmlEl.classList.add('dark');
+                if (sunIcon) sunIcon.classList.add('hidden');
+                if (moonIcon) moonIcon.classList.remove('hidden');
+            } else {
+                htmlEl.classList.remove('dark');
+                if (sunIcon) sunIcon.classList.remove('hidden');
+                if (moonIcon) moonIcon.classList.add('hidden');
+            }
+            
+            // Re-render button state styling depending on layout
+            setLayout(state.layout);
+            setViewport(state.viewport);
+            localStorage.setItem('LBA_theme', targetTheme);
+        }
+
+        function toggleTheme() {
+            const nextTheme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(nextTheme);
+            showToast(`${nextTheme === 'dark' ? 'Dark' : 'Light'} mode activated`, 'info');
+        }
+
+        // Load Starter Template
+        function loadDefaultTemplate() {
+            htmlInput.value = defaultCode.html;
+            cssInput.value = defaultCode.css;
+            jsInput.value = defaultCode.js;
+            updateAllGutters();
+            triggerUpdatePreview(true);
+            showToast('Starter template loaded!');
+        }
+
+        // Clear All Editors
+        function clearAllCode() {
+            htmlInput.value = '';
+            cssInput.value = '';
+            jsInput.value = '';
+            updateAllGutters();
+            triggerUpdatePreview(true);
+            showToast('All editors cleared', 'info');
+        }
+
+        // --- Editor Gutter & Tab Indentation ---
+        function setupTabKeyAndLineNumbers() {
+            ['html', 'css', 'js'].forEach(type => {
+                const textarea = document.getElementById(`code-${type}`);
+                
+                // Input Handler for debounced live execution and line gutter syncing
+                textarea.addEventListener('input', () => {
+                    updateGutter(type);
+                    if (state.autoRun) {
+                        debouncedUpdatePreview();
+                    }
+                });
+
+                // Scroll sync for custom gutters
+                textarea.addEventListener('scroll', () => {
+                    const gutter = document.getElementById(`gutter-${type}`);
+                    gutter.scrollTop = textarea.scrollTop;
+                });
+
+                // Handle Tab key in textareas
+                textarea.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        e.preventDefault();
+                        const start = textarea.selectionStart;
+                        const end = textarea.selectionEnd;
+                        textarea.value = textarea.value.substring(0, start) + '  ' + textarea.value.substring(end);
+                        textarea.selectionStart = textarea.selectionEnd = start + 2;
+                        updateGutter(type);
+                        if (state.autoRun) debouncedUpdatePreview();
+                    }
+                });
+            });
+        }
+
+        function updateGutter(type) {
+            const textarea = document.getElementById(`code-${type}`);
+            const gutter = document.getElementById(`gutter-${type}`);
+            const lineBadge = document.getElementById(`lines-${type}`);
+            const lines = textarea.value.split('\n').length;
+            
+            let lineNums = '';
+            for (let i = 1; i <= lines; i++) {
+                lineNums += i + '<br>';
+            }
+            gutter.innerHTML = lineNums;
+            lineBadge.textContent = `${lines} ${lines === 1 ? 'line' : 'lines'}`;
+        }
+
+        function updateAllGutters() {
+            updateGutter('html');
+            updateGutter('css');
+            updateGutter('js');
+        }
+
+        // --- Live Preview Execution ---
+        function debouncedUpdatePreview() {
+            clearTimeout(state.updateTimer);
+            state.updateTimer = setTimeout(() => {
+                triggerUpdatePreview();
+            }, 350);
+        }
+
+        function triggerUpdatePreview(clearConsole = false) {
+            if (clearConsole) clearConsoleLog();
+
+            const html = htmlInput.value;
+            const css = cssInput.value;
+            const js = jsInput.value;
+
+            // Script injected into Frame to intercept console logs and relay to parent app
+            const consoleInterceptorScript = `
+                <script>
+                    (function() {
+                        const _log = console.log;
+                        const _error = console.error;
+                        const _warn = console.warn;
+                        const _info = console.info;
+
+                        function sendMessage(type, args) {
+                            try {
+                                const parsedArgs = Array.from(args).map(arg => {
+                                    if (typeof arg === 'object') return JSON.stringify(arg);
+                                    return String(arg);
+                                }).join(' ');
+                                window.parent.postMessage({ type: 'CONSOLE_LOG', level: type, msg: parsedArgs }, '*');
+                            } catch(e) {}
+                        }
+
+                        console.log = function(...args) { sendMessage('log', args); _log.apply(console, args); };
+                        console.error = function(...args) { sendMessage('error', args); _error.apply(console, args); };
+                        console.warn = function(...args) { sendMessage('warn', args); _warn.apply(console, args); };
+                        console.info = function(...args) { sendMessage('info', args); _info.apply(console, args); };
+
+                        window.onerror = function(msg, url, line) {
+                            sendMessage('error', [\`Error: \${msg} (Line \${line})\`]);
+                        };
+                    })();
+                <\/script>
+            `;
+
+            const fullContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <style>${css}</style>
+                </head>
+                <body>
+                    ${html}
+                    ${consoleInterceptorScript}
+                    <script>${js}<\/script>
+                </body>
+                </html>
+            `;
+
+            previewFrame.srcdoc = fullContent;
+        }
+
+        function reloadPreviewFrame() {
+            triggerUpdatePreview(true);
+            showToast('Preview frame reloaded');
+        }
+
+        function openPreviewNewTab() {
+            const html = htmlInput.value;
+            const css = cssInput.value;
+            const js = jsInput.value;
+            const newWindow = window.open();
+            if (newWindow) {
+                newWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head><title>LBA Preview</title><style>${css}</style></head>
+                    <body>${html}<script>${js}<\/script></body>
+                    </html>
+                `);
+                newWindow.document.close();
+            }
+        }
+
+        // --- Intercepted Console Handler ---
+        function setupConsoleCapture() {
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'CONSOLE_LOG') {
+                    appendConsoleEntry(event.data.level, event.data.msg);
+                }
+            });
+        }
+
+        function appendConsoleEntry(level, message) {
+            // Remove empty placeholder
+            if (state.logsCount === 0) {
+                consoleLogsDiv.innerHTML = '';
+            }
+
+            state.logsCount++;
+            document.getElementById('console-badge').textContent = state.logsCount;
+
+            const entry = document.createElement('div');
+            entry.className = 'flex items-start space-x-2 py-0.5 border-b border-slate-200/60 dark:border-slate-800/40 font-mono text-[11px]';
+
+            let iconColor = 'text-sky-600 dark:text-sky-400';
+            let textColor = 'text-slate-800 dark:text-slate-200';
+
+            if (level === 'error') {
+                iconColor = 'text-rose-600 dark:text-rose-400';
+                textColor = 'text-rose-700 dark:text-rose-300';
+            } else if (level === 'warn') {
+                iconColor = 'text-amber-600 dark:text-amber-400';
+                textColor = 'text-amber-700 dark:text-amber-200';
+            }
+
+            entry.innerHTML = `
+                <span class="${iconColor} shrink-0">❯</span>
+                <span class="${textColor} break-all">${escapeHtml(message)}</span>
+            `;
+
+            consoleLogsDiv.appendChild(entry);
+            consoleLogsDiv.scrollTop = consoleLogsDiv.scrollHeight;
+        }
+
+        function clearConsoleLog() {
+            state.logsCount = 0;
+            document.getElementById('console-badge').textContent = '0';
+            consoleLogsDiv.innerHTML = `<div class="text-slate-400 dark:text-slate-500 italic text-[11px]">Console ready. Interactive logs and runtime errors will render here...</div>`;
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        // --- Device Frame Sizing Controls ---
+        function setViewport(mode) {
+            const container = document.getElementById('preview-frame-container');
+            const btns = ['responsive', 'tablet', 'mobile'];
+            
+            btns.forEach(b => {
+                const btn = document.getElementById(`device-${b}`);
+                if (b === mode) {
+                    btn.className = "px-2 py-1 text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-800 rounded font-medium flex items-center space-x-1 shadow-xs dark:shadow-none";
+                } else {
+                    btn.className = "px-2 py-1 text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 rounded flex items-center space-x-1";
+                }
+            });
+
+            if (mode === 'responsive') {
+                container.style.width = '100%';
+            } else if (mode === 'tablet') {
+                container.style.width = '768px';
+            } else if (mode === 'mobile') {
+                container.style.width = '375px';
+            }
+            state.viewport = mode;
+        }
+
+        // --- Layout Switching (Side-by-side / Tabbed / Stacked) ---
+        function setLayout(mode) {
+            state.layout = mode;
+            const editorSection = document.getElementById('editor-section');
+            const previewSection = document.getElementById('preview-section');
+            const workspace = document.getElementById('workspace');
+            const mobileTabBar = document.getElementById('mobile-tab-bar');
+
+            // Active button highlight
+            ['split', 'tabs', 'stacked'].forEach(m => {
+                const btn = document.getElementById(`btn-layout-${m}`);
+                if (m === mode) {
+                    btn.className = "p-1.5 text-brand-600 dark:text-brand-400 bg-white dark:bg-slate-700/80 rounded-lg shadow-sm";
+                } else {
+                    btn.className = "p-1.5 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white rounded-lg transition-all";
+                }
+            });
+
+            const boxes = ['html', 'css', 'js'];
+
+            if (mode === 'split') {
+                workspace.className = "flex-1 flex flex-col md:flex-row overflow-hidden p-3 gap-3 relative";
+                editorSection.className = "w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300";
+                previewSection.className = "w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300";
+                mobileTabBar.classList.add('hidden');
+                boxes.forEach(b => document.getElementById(`box-${b}`).classList.remove('hidden'));
+            } else if (mode === 'stacked') {
+                workspace.className = "flex-1 flex flex-col overflow-y-auto p-3 gap-3 relative";
+                editorSection.className = "w-full flex flex-col gap-3 shrink-0 h-[500px]";
+                previewSection.className = "w-full flex flex-col gap-3 shrink-0 h-[500px]";
+                mobileTabBar.classList.add('hidden');
+                boxes.forEach(b => document.getElementById(`box-${b}`).classList.remove('hidden'));
+            } else if (mode === 'tabs') {
+                workspace.className = "flex-1 flex flex-col md:flex-row overflow-hidden p-3 gap-3 relative";
+                editorSection.className = "w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300";
+                previewSection.className = "w-full md:w-1/2 flex flex-col gap-3 h-full overflow-hidden transition-all duration-300";
+                mobileTabBar.classList.remove('hidden');
+                switchTab(state.activeTab);
+            }
+        }
+
+        function switchTab(tab) {
+            state.activeTab = tab;
+            ['html', 'css', 'js'].forEach(t => {
+                const box = document.getElementById(`box-${t}`);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                
+                if (t === tab) {
+                    box.classList.remove('hidden');
+                    btn.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-500/30";
+                } else {
+                    box.classList.add('hidden');
+                    btn.className = "flex-1 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center space-x-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200";
+                }
+            });
+        }
+
+        // --- Copy Logic ---
+        function copySnippet(type) {
+            const textarea = document.getElementById(`code-${type}`);
+            copyToClipboard(textarea.value);
+            showToast(`${type.toUpperCase()} code copied to clipboard!`);
+        }
+
+        function copyCombinedCode() {
+            const combined = `<!-- HTML -->\n${htmlInput.value}\n\n/* CSS */\n${cssInput.value}\n\n// JavaScript\n${jsInput.value}`;
+            copyToClipboard(combined);
+            showToast('All project code copied to clipboard!');
+        }
+
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // --- Toast Notification Feedback ---
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.textContent = message;
+
+            if (type === 'success') {
+                toastIcon.setAttribute('data-lucide', 'check-circle-2');
+                toastIcon.className = 'w-4 h-4 text-emerald-500 dark:text-emerald-400';
+            } else {
+                toastIcon.setAttribute('data-lucide', 'info');
+                toastIcon.className = 'w-4 h-4 text-sky-500 dark:text-sky-400';
+            }
+            lucide.createIcons();
+
+            toast.classList.remove('translate-y-12', 'opacity-0', 'pointer-events-none');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-12', 'opacity-0', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
