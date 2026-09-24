@@ -6,7 +6,7 @@
 <title>Verify a certificate · Last Benchers Association</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Mrs+Saint+Delafield&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
@@ -14,14 +14,15 @@
 --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Public Sans','Segoe UI',system-ui,sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
-header{background:linear-gradient(135deg,#150E1B,#3B1E5E);color:#fff;padding:14px 20px}
-header b{font:800 18px var(--head);color:#F5A9D0;letter-spacing:.2px}
+[hidden]{display:none!important}
+body>header{background:linear-gradient(135deg,#150E1B,#3B1E5E);color:#fff;padding:14px 20px}
+body>header b{font:800 18px var(--head);color:#F5A9D0;letter-spacing:.2px}
 main{max-width:720px;margin:0 auto;padding:36px 20px 64px}
-footer{max-width:720px;margin:0 auto;padding:0 20px 40px;display:flex;justify-content:center}
-footer a{display:inline-block;padding:9px 18px;border-radius:6px;border:1.5px solid var(--line);color:var(--mute);
+body>footer{max-width:720px;margin:0 auto;padding:0 20px 40px;display:flex;justify-content:center}
+body>footer a{display:inline-block;padding:9px 18px;border-radius:6px;border:1.5px solid var(--line);color:var(--mute);
 font:600 13px var(--body);text-decoration:none;background:#fff}
-footer a:hover{color:var(--ink);border-color:var(--ok)}
-@media(min-width:900px){footer{max-width:800px}}
+body>footer a:hover{color:var(--ink);border-color:var(--ok)}
+@media(min-width:900px){body>footer{max-width:800px}}
 h1{font:800 clamp(28px,6vw,42px)/1.1 var(--head);margin:0 0 8px}
 .sub{color:var(--mute);margin:0 0 24px}
 form{display:flex;gap:8px;flex-wrap:wrap}
@@ -53,8 +54,8 @@ button:disabled{opacity:.55;cursor:wait}
 .cert-seal.revoked{border-color:var(--bad);color:var(--bad)}
 
 .cert-head{text-align:center;margin-bottom:18px}
-.cert-logo{max-height:56px;max-width:180px;object-fit:contain;margin:0 auto 10px;display:block}
-.cert-org{font:800 15px var(--head);letter-spacing:1.5px;text-transform:uppercase;color:var(--ink)}
+ .cert-logo{max-height:84px;max-width:220px;object-fit:contain;margin:0 auto 10px;display:block}
+  .cert-org{font:800 15px var(--head);letter-spacing:1.5px;text-transform:uppercase;color:var(--ink)}
 .cert-kicker{font:600 12px var(--body);letter-spacing:3px;text-transform:uppercase;color:var(--chalk);margin-top:4px}
 
 .cert-body{text-align:center;padding:0 10px}
@@ -71,7 +72,10 @@ button:disabled{opacity:.55;cursor:wait}
 
 .cert-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:34px;padding-top:16px;
   border-top:1px dashed var(--line);gap:16px;flex-wrap:wrap}
-.sig-line{width:150px;border-top:1.5px solid var(--ink);margin-bottom:6px}
+.sig{text-align:center;min-width:170px}
+.sig-sign{font:400 44px/1 'Mrs Saint Delafield','Segoe Script',cursive;color:#2A0944;transform:rotate(-3deg);margin-bottom:2px}
+.sig-line{width:170px;border-top:1.5px solid var(--ink);margin:0 auto 6px}
+.sig-name{font:700 13px var(--body);color:var(--ink)}
 .sig-label{font-size:11px;color:var(--mute);letter-spacing:.5px;text-transform:uppercase}
 .cert-id{text-align:right}
 .cert-id small{display:block;color:var(--mute);font-size:11px}
@@ -117,10 +121,13 @@ button:disabled{opacity:.55;cursor:wait}
       <dl class="cert-meta" id="certMeta"></dl>
     </div>
     <footer class="cert-foot">
-      <div>
-        <div class="sig-line"></div>
-        <div class="sig-label">Authorized Signatory</div>
-      </div>
+     
+      <div class="sig">
+  <div class="sig-sign">Saurav Chaterjee</div>
+  <div class="sig-line"></div>
+  <div class="sig-name">Saurav Chaterjee</div>
+  <div class="sig-label">Director, LBA</div>
+</div>
       <div class="cert-id">
         <small>Certificate ID</small>
         <b id="certIdText"></b>
@@ -205,6 +212,7 @@ async function downloadPdf(){
   const btn = $('pdf'); btn.disabled = true;
   try{
     if (!window.html2canvas || !window.jspdf) throw new Error('PDF libraries not loaded');
+    await document.fonts.ready; 
     const canvas = await html2canvas($('certFrame'), { scale: 2, backgroundColor: '#ffffff', useCORS: true });
     const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: canvas.width > canvas.height ? 'landscape' : 'portrait' });
     const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight(), m = 12;
