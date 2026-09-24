@@ -40,6 +40,10 @@ small{color:var(--mute)}
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 
+.brand-logo{max-height:34px;max-width:150px;object-fit:contain;display:block;margin-bottom:6px}
+#login-card .brand-logo{max-height:48px;margin:0 auto 14px}
+
+  
 /* ---- login screen ---- */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 20% 20%,var(--purple-900),var(--black) 65%);padding:20px}
 #login-card{background:#fff;border-radius:14px;padding:32px;max-width:360px;width:100%;box-shadow:0 20px 60px rgba(21,14,27,.4)}
@@ -124,6 +128,7 @@ td.id{font-family:ui-monospace,Consolas,monospace;white-space:nowrap;color:var(-
 
 <section id="login-screen">
   <div id="login-card">
+    <img class="brand-logo" id="loginLogo" alt="Last Benchers Association logo">
     <div class="brand">Last Benchers Association</div>
     <h1>Admin sign in</h1>
     <form id="lf">
@@ -137,7 +142,8 @@ td.id{font-family:ui-monospace,Consolas,monospace;white-space:nowrap;color:var(-
 
 <div id="app-screen" hidden>
   <aside id="sidebar">
-    <div class="brand">LBA <span>Admin</span></div>
+<img class="brand-logo" id="sidebarLogo" alt="Last Benchers Association logo">
+<div class="brand">LBA <span>Admin</span></div>
     <small class="sub">Certificate console</small>
     <nav class="tabs">
       <button type="button" data-tab="dashboard" class="active">📊 Dashboard</button>
@@ -278,6 +284,15 @@ td.id{font-family:ui-monospace,Consolas,monospace;white-space:nowrap;color:var(-
 const API_URL    = 'https://script.google.com/macros/s/AKfycby-fUWL8BvDO-2NcqUHQAcRbqrISohW27yuSJu0k7uWb6B3LhnrDqB4G86F7FHgygRN/exec';                      // Apps Script /exec URL
 const VERIFY_URL = 'https://digital.lastbenchers.org/verify.html'; // public URL of index.html
 
+const LOGO_URL = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhON3wS_QfIbcQEtMuqpP8h2_BZAvod-LS7VtsivhWGgBBJ1dJPd2v1fih_G82ApDNaJlF6zlUFfJhL6Cdv6h4t7UY49QuUeDGksBathqFl1Cxl5idJ9cLUIWH8p-zVucjkJ-OJDeVR65iY6WE1SPmT9lJo0F5QAWD4PiD1qrCPTxkthVK958cOg_8XD5L3/w640-h606/photo_6262500503476441584_y.jpg'; // direct https link to your NGO logo (png/svg/webp)
+if (LOGO_URL && !LOGO_URL.startsWith('PASTE')) {
+  document.querySelectorAll('#loginLogo,#sidebarLogo').forEach(img => img.src = LOGO_URL);
+} else {
+  document.querySelectorAll('#loginLogo,#sidebarLogo').forEach(img => img.remove());
+}
+  
+
+  
 const $ = id => document.getElementById(id);
 const TK = 'lba_token';
 let qrCanvas = null, qrId = '';
