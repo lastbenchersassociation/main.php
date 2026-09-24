@@ -10,7 +10,7 @@
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
-:root{--ink:#2A0944;--bg:#F8F3FA;--chalk:#E0449C;--ok:#6B2FA8;--bad:#C2196E;--mute:#6E5E7D;--line:#E7D9EE;
+:root{--ink:#2A0944;--bg:#F8F3FA;--gold:#D4AF37;--chalk:#E0449C;--ok:#6B2FA8;--bad:#C2196E;--mute:#6E5E7D;--line:#E7D9EE;
 --head:'Bricolage Grotesque','Segoe UI',system-ui,sans-serif;--body:'Public Sans','Segoe UI',system-ui,sans-serif}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
@@ -34,30 +34,58 @@ button:disabled{opacity:.55;cursor:wait}
 :focus-visible{outline:3px solid var(--chalk);outline-offset:2px}
 #status{margin:20px 0 0;min-height:1.5em;font-weight:600}
 #status.warn{color:var(--bad)}
-.cert{position:relative;margin-top:24px;background:#fff;border:1px solid var(--line);border-left:10px solid var(--ok);
-border-radius:6px;padding:32px 28px 28px}
-.cert.revoked{border-left-color:var(--bad)}
-.seal{display:inline-block;transform:rotate(-3deg);border:3px solid var(--ok);color:var(--ok);border-radius:6px;padding:6px 14px;
-font:800 14px/1.25 var(--head);margin-bottom:18px}
-.seal small{display:block;font:600 12px var(--body)}
-.revoked .seal{border-color:var(--bad);color:var(--bad)}
-.name{font:800 clamp(26px,5vw,36px)/1.15 var(--head);margin:0}
-.inst{margin:2px 0 14px;font-size:18px;color:var(--mute)}
-.did{font-size:18px;margin:0 0 18px}
-dl{display:grid;grid-template-columns:110px 1fr;gap:6px 14px;margin:0 0 18px}
-dt{color:var(--mute)}dd{margin:0;font-weight:600;overflow-wrap:anywhere}
-.desc{margin:0 0 16px;white-space:pre-line;overflow-wrap:anywhere}
-.chips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding:0;list-style:none}
-.chips li{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:2px 10px;font-size:14px;font-weight:600;color:#3B1E5E}
-.foot{border-top:1px dashed var(--line);padding-top:14px;font-size:14px;color:var(--mute);overflow-wrap:anywhere}
-.foot b{color:var(--ink);font-family:ui-monospace,Consolas,monospace}
-#actions{margin-top:16px}
-html{-webkit-text-size-adjust:100%}
-input,button{min-height:46px}
-@media(min-width:900px){main{max-width:800px;padding-top:56px}.cert{padding:40px 40px 34px}dl{grid-template-columns:130px 1fr}}
-@media(max-width:600px){main{padding:24px 16px 48px}.cert{padding:24px 18px;border-left-width:8px}#f button,#pdf{width:100%}}
-@media(max-width:480px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+:root{--gold:#D4AF37}
+
+.cert-frame{position:relative;background:#fff;border:2px solid var(--ok);border-radius:4px;
+  padding:44px 40px 34px;box-shadow:0 18px 50px rgba(42,9,68,.12);overflow:hidden;margin-top:24px}
+.cert-frame.revoked{border-color:var(--bad)}
+.cert-frame::before{content:'';position:absolute;inset:10px;border:1.5px solid var(--line);pointer-events:none}
+.corner{position:absolute;width:34px;height:34px;border:3px solid var(--gold);pointer-events:none}
+.corner.tl{top:6px;left:6px;border-right:0;border-bottom:0}
+.corner.tr{top:6px;right:6px;border-left:0;border-bottom:0}
+.corner.bl{bottom:6px;left:6px;border-right:0;border-top:0}
+.corner.br{bottom:6px;right:6px;border-left:0;border-top:0}
+
+.cert-seal{position:absolute;top:26px;right:26px;width:74px;height:74px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;text-align:center;
+  border:3px solid var(--ok);color:var(--ok);font:800 11px/1.2 var(--head);text-transform:uppercase;
+  transform:rotate(8deg);background:#fff}
+.cert-seal.revoked{border-color:var(--bad);color:var(--bad)}
+
+.cert-head{text-align:center;margin-bottom:18px}
+.cert-logo{max-height:56px;max-width:180px;object-fit:contain;margin:0 auto 10px;display:block}
+.cert-org{font:800 15px var(--head);letter-spacing:1.5px;text-transform:uppercase;color:var(--ink)}
+.cert-kicker{font:600 12px var(--body);letter-spacing:3px;text-transform:uppercase;color:var(--chalk);margin-top:4px}
+
+.cert-body{text-align:center;padding:0 10px}
+.cert-presented{color:var(--mute);margin:18px 0 6px;font-size:14px}
+.cert-name{font:800 clamp(28px,6vw,44px)/1.15 var(--head);margin:0 0 4px;color:var(--ink)}
+.cert-inst{color:var(--mute);font-size:17px;margin:0 0 16px}
+.cert-did{font-size:16px;margin:0 auto 14px;max-width:520px}
+.cert-desc{font-size:14px;color:var(--mute);white-space:pre-line;max-width:560px;margin:0 auto 18px;overflow-wrap:anywhere}
+.cert-chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;list-style:none;padding:0;margin:0 0 24px}
+.cert-chips li{background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:3px 12px;font-size:12px;font-weight:700;color:#3B1E5E}
+.cert-meta{display:inline-grid;grid-template-columns:auto auto;gap:4px 22px;text-align:left;margin:0 auto;font-size:13px}
+.cert-meta dt{color:var(--mute)}
+.cert-meta dd{margin:0;font-weight:700}
+
+.cert-foot{display:flex;justify-content:space-between;align-items:flex-end;margin-top:34px;padding-top:16px;
+  border-top:1px dashed var(--line);gap:16px;flex-wrap:wrap}
+.sig-line{width:150px;border-top:1.5px solid var(--ink);margin-bottom:6px}
+.sig-label{font-size:11px;color:var(--mute);letter-spacing:.5px;text-transform:uppercase}
+.cert-id{text-align:right}
+.cert-id small{display:block;color:var(--mute);font-size:11px}
+.cert-id b{font-family:ui-monospace,Consolas,monospace;color:var(--ink)}
+
+#actions{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap}
+
+@media(max-width:640px){
+  .cert-frame{padding:30px 18px 24px}
+  .cert-foot{flex-direction:column;align-items:center;text-align:center}
+  .cert-id{text-align:center}
+}
 @media print{body *{visibility:hidden}#cert,#cert *{visibility:visible}#cert{position:absolute;left:0;top:0;width:100%;margin:0}}
+
 </style>
 </head>
 <body>
@@ -70,18 +98,54 @@ input,button{min-height:46px}
     <button id="go" type="submit">Verify</button>
   </form>
   <p id="status" role="status" aria-live="polite"></p>
-  <article id="cert" class="cert" hidden></article>
-  <div id="actions" hidden><button id="pdf" class="alt" type="button">Download PDF</button></div>
+  <article id="cert" hidden>
+  <div class="cert-frame" id="certFrame">
+    <div class="corner tl"></div><div class="corner tr"></div><div class="corner bl"></div><div class="corner br"></div>
+    <div class="cert-seal" id="certSeal"></div>
+    <header class="cert-head">
+      <img class="cert-logo" id="certLogo" alt="Last Benchers Association logo">
+      <div class="cert-org">Last Benchers Association</div>
+      <div class="cert-kicker">Certificate of Recognition</div>
+    </header>
+    <div class="cert-body">
+      <p class="cert-presented">This certificate is proudly presented to</p>
+      <h2 class="cert-name" id="certName"></h2>
+      <p class="cert-inst" id="certInst"></p>
+      <p class="cert-did" id="certDid"></p>
+      <p class="cert-desc" id="certDesc"></p>
+      <ul class="cert-chips" id="certChips"></ul>
+      <dl class="cert-meta" id="certMeta"></dl>
+    </div>
+    <footer class="cert-foot">
+      <div>
+        <div class="sig-line"></div>
+        <div class="sig-label">Authorized Signatory</div>
+      </div>
+      <div class="cert-id">
+        <small>Certificate ID</small>
+        <b id="certIdText"></b>
+      </div>
+    </footer>
+  </div>
+</article>
+<div id="actions" hidden>
+  <button id="pdf" class="alt" type="button">Download PDF</button>
+  <button id="png" type="button" style="background:#fff;color:var(--ink);border:1.5px solid var(--line)">Download image</button>
+</div>
 </main>
 <footer><a href="verifyadmin.html">Admin sign in</a></footer>
 <script>
 const API_URL = 'https://script.google.com/macros/s/AKfycby-fUWL8BvDO-2NcqUHQAcRbqrISohW27yuSJu0k7uWb6B3LhnrDqB4G86F7FHgygRN/exec';   // Apps Script /exec URL
-
+const LOGO_URL = 'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhON3wS_QfIbcQEtMuqpP8h2_BZAvod-LS7VtsivhWGgBBJ1dJPd2v1fih_G82ApDNaJlF6zlUFfJhL6Cdv6h4t7UY49QuUeDGksBathqFl1Cxl5idJ9cLUIWH8p-zVucjkJ-OJDeVR65iY6WE1SPmT9lJo0F5QAWD4PiD1qrCPTxkthVK958cOg_8XD5L3/w640-h606/photo_6262500503476441584_y.jpg'; // https link to your logo (png/svg/webp)
 const $ = id => document.getElementById(id);
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const VERB = { Internship:'completed an internship', Volunteer:'volunteered', Member:'served as a member', Others:'contributed' };
 let seq = 0, currentId = '';
 
+const logoImg = document.getElementById('certLogo');
+if (LOGO_URL && !LOGO_URL.startsWith('PASTE')) { logoImg.crossOrigin = 'anonymous'; logoImg.src = LOGO_URL; }
+else { logoImg.remove(); }
+  
 const fmt = s => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || ''); return m ? `${+m[3]} ${MON[+m[2]-1]} ${m[1]}` : ''; };
 function el(tag, cls, text){ const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 function say(text, warn){ const s = $('status'); s.textContent = text; s.className = warn ? 'warn' : ''; }
@@ -114,39 +178,57 @@ async function lookup(raw, updateUrl){
 function render(d){
   const revoked = d.Status === 'Revoked';
   currentId = d.ID;
-  const c = $('cert'); c.replaceChildren(); c.className = 'cert' + (revoked ? ' revoked' : '');
-  const seal = el('div', 'seal', revoked ? 'Revoked' : 'Verified');
-  seal.appendChild(el('small', '', revoked ? 'This certificate is no longer valid' : 'by Last Benchers Association'));
-  c.append(seal, el('h2', 'name', d.Name), el('p', 'inst', 'of ' + d.Institution),
-           el('p', 'did', `has ${VERB[d.WorkType] || 'contributed'} in ${d.Domain}.`));
-  const dl = el('dl');
-  const period = fmt(d.StartDate) + ' to ' + (fmt(d.EndDate) || 'Present');
-  [['Work type', d.WorkType], ['Domain', d.Domain], ['Title', d.Title], ['Period', period]].forEach(([k, v]) => {
-    dl.append(el('dt', '', k), el('dd', '', v));
-  });
-  c.append(dl, el('p', 'desc', d.Description));
-  const chips = el('ul', 'chips');
-  String(d.Skills).split(',').map(s => s.trim()).filter(Boolean).forEach(s => chips.appendChild(el('li', '', s)));
-  c.appendChild(chips);
-  const foot = el('div', 'foot'); foot.append('Certificate ID: ', el('b', '', d.ID));
-  c.appendChild(foot);
-  c.hidden = false; $('actions').hidden = false;
-  c.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
+  $('certFrame').classList.toggle('revoked', revoked);
+  const seal = $('certSeal');
+  seal.textContent = revoked ? 'Revoked' : 'Verified';
+  seal.classList.toggle('revoked', revoked);
+  $('certName').textContent = d.Name;
+  $('certInst').textContent = 'of ' + d.Institution;
+  $('certDid').textContent = `has ${VERB[d.WorkType] || 'contributed'} in ${d.Domain}.`;
+  $('certDesc').textContent = d.Description;
 
+  const chips = $('certChips'); chips.replaceChildren();
+  String(d.Skills).split(',').map(s => s.trim()).filter(Boolean).forEach(s => chips.appendChild(el('li', '', s)));
+
+  const meta = $('certMeta'); meta.replaceChildren();
+  const period = fmt(d.StartDate) + ' – ' + (fmt(d.EndDate) || 'Present');
+  [['Work type', d.WorkType], ['Domain', d.Domain], ['Title', d.Title], ['Period', period]].forEach(([k, v]) => {
+    meta.append(el('dt', '', k), el('dd', '', v));
+  });
+
+  $('certIdText').textContent = d.ID;
+  $('cert').hidden = false; $('actions').hidden = false;
+  $('cert').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+  
 async function downloadPdf(){
   const btn = $('pdf'); btn.disabled = true;
   try{
     if (!window.html2canvas || !window.jspdf) throw new Error('PDF libraries not loaded');
-    const canvas = await html2canvas($('cert'), { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4' });
-    const W = 210, H = 297, m = 15;
-    let w = W - 2 * m, h = canvas.height * w / canvas.width;
-    if (h > H - 2 * m){ h = H - 2 * m; w = canvas.width * h / canvas.height; }
-    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (W - w) / 2, m, w, h);
+    const canvas = await html2canvas($('certFrame'), { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    const pdf = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: canvas.width > canvas.height ? 'landscape' : 'portrait' });
+    const pageW = pdf.internal.pageSize.getWidth(), pageH = pdf.internal.pageSize.getHeight(), m = 12;
+    let w = pageW - 2 * m, h = canvas.height * w / canvas.width;
+    if (h > pageH - 2 * m){ h = pageH - 2 * m; w = canvas.width * h / canvas.height; }
+    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', (pageW - w) / 2, (pageH - h) / 2, w, h);
     pdf.save('LBA-Certificate-' + currentId + '.pdf');
   }catch(err){
-    window.print();                                 // fallback: browser "Save as PDF"
+    window.print();
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+async function downloadPng(){
+  const btn = $('png'); btn.disabled = true;
+  try{
+    if (!window.html2canvas) throw new Error('Image export library not loaded');
+    const canvas = await html2canvas($('certFrame'), { scale: 2, backgroundColor: '#ffffff', useCORS: true });
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png'); a.download = 'LBA-Certificate-' + currentId + '.png';
+    document.body.appendChild(a); a.click(); a.remove();
+  }catch(err){
+    alert(err.message);
   }finally{
     btn.disabled = false;
   }
@@ -154,6 +236,7 @@ async function downloadPdf(){
 
 $('f').addEventListener('submit', e => { e.preventDefault(); lookup($('q').value, true); });
 $('pdf').addEventListener('click', downloadPdf);
+$('png').addEventListener('click', downloadPng);  
 const startId = new URLSearchParams(location.search).get('id');
 if (startId) lookup(startId, false);
 </script>
