@@ -577,15 +577,21 @@ const SETTINGS_FIELDS = [
     ['phone', 'Phone (display)', 'text'], ['whatsapp_number', 'WhatsApp Number (digits + country code)', 'text'],
     ['email', 'Email', 'text'], ['address', 'Office Address', 'text'], ['map_embed_url', 'Google Maps Embed URL', 'text']
   ]],
-  ['Social Links', [
+    ['Social Links', [
     ['instagram_url', 'Instagram URL', 'text'], ['facebook_url', 'Facebook URL', 'text'],
     ['linkedin_url', 'LinkedIn URL', 'text'], ['youtube_url', 'YouTube URL', 'text'],
     ['pinterest_url', 'Pinterest URL', 'text']
+  ]],
+  ['Brochure Popup', [
+    ['brochure_heading', 'Popup Heading', 'text'],
+    ['brochure_subtext', 'Popup Subtext', 'textarea'],
+    ['brochure_url', 'Brochure File Link (PDF / Drive share link)', 'text']
   ]]
 ];
 const SECTION_TOGGLES = [
   ['show_services', 'Services section'], ['show_portfolio', 'Client portfolio section'],
-  ['show_gallery', 'Gallery section'], ['show_clients', 'Clients trust strip'], ['show_testimonials', 'Testimonials section']
+  ['show_gallery', 'Gallery section'], ['show_clients', 'Clients trust strip'], ['show_testimonials', 'Testimonials section'],
+  ['show_brochure', 'Brochure download popup']
 ];
 
 function renderSettings(c) {
