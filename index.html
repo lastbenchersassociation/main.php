@@ -246,6 +246,18 @@
   .lightbox img{max-height:82vh;max-width:92vw;border-radius:12px}
   .lightbox-close{position:absolute;top:20px;right:26px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:26px;cursor:pointer;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center}
   .lightbox-close:hover{background:var(--pink);border-color:var(--pink)}
+/* ── brochure popup ── */
+#brochure-trigger{position:fixed;left:22px;bottom:92px;z-index:998;display:none;align-items:center;gap:8px;padding:.7rem 1.1rem;border-radius:999px;background:var(--gradient);color:#fff;font-family:var(--font-display);font-weight:700;font-size:.82rem;box-shadow:0 10px 26px rgba(246,26,168,.3);border:none;cursor:pointer;transition:var(--transition)}
+#brochure-trigger:hover{transform:translateY(-2px)}
+#brochure-trigger svg{width:18px;height:18px;stroke:#fff;flex-shrink:0}
+.brochure-overlay{position:fixed;inset:0;background:rgba(15,17,21,.6);display:none;align-items:center;justify-content:center;z-index:300;padding:20px}
+.brochure-overlay.active{display:flex}
+.brochure-card{background:var(--paper);border-radius:var(--radius);max-width:420px;width:100%;padding:2rem;position:relative;box-shadow:0 30px 60px rgba(0,0,0,.3)}
+.brochure-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:22px;color:var(--body-text);cursor:pointer}
+.brochure-card h3{font-size:1.3rem;margin-bottom:.5rem}
+.brochure-card p{font-size:.92rem;margin-bottom:1.3rem;color:var(--body-text)}
+@media(max-width:480px){#brochure-trigger{left:14px;bottom:82px}}
+ 
 /* ── gallery mobile: horizontal scroll with arrows instead of stacked grid ── */
 .gallery-scroll-wrap{position:relative}
 .gallery-arrow{display:none;position:absolute;top:50%;transform:translateY(-50%);z-index:10;width:36px;height:36px;border-radius:50%;background:var(--paper);border:1px solid var(--border);box-shadow:var(--card-shadow);align-items:center;justify-content:center;cursor:pointer;color:var(--heading)}
@@ -416,6 +428,27 @@
   <img id="lightboxImg" src="" alt="">
 </div>
 
+ <!-- BROCHURE POPUP -->
+<button id="brochure-trigger" aria-label="Download brochure">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15V3M7 10l5 5 5-5M3 21h18"/></svg>
+  <span id="brochure-trigger-text">Download Brochure</span>
+</button>
+
+<div class="brochure-overlay" id="brochureOverlay">
+  <div class="brochure-card">
+    <button class="brochure-close" id="brochureClose">&times;</button>
+    <h3 id="brochure-modal-heading">Download our brochure</h3>
+    <p id="brochure-modal-subtext">Get our full company brochure — just tell us where to send it.</p>
+    <form id="brochure-form">
+      <div class="form-field mb-3"><label class="block mb-1">Full Name</label><input id="br-name" required type="text" placeholder="Jane Doe"></div>
+      <div class="form-field mb-3"><label class="block mb-1">Phone</label><input id="br-phone" required type="tel" placeholder="+91 98765 43210"></div>
+      <div class="form-field mb-4"><label class="block mb-1">Email</label><input id="br-email" required type="email" placeholder="jane@company.com"></div>
+      <button class="btn-primary w-full justify-center" type="submit" id="br-submit-btn">Get Download Link →</button>
+      <p id="br-status" class="text-sm text-center mt-3 font-mono"></p>
+    </form>
+  </div>
+</div>
+
 <!-- CHATBOT WIDGET -->
 <div id="chatbot-launcher" aria-label="Chat with Benchy">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
@@ -533,6 +566,8 @@
   </div>
 </section>
 
+
+ 
 <!-- WHY US -->
 <section class="max-w-[1200px] mx-auto px-4 sm:px-8 pt-24">
   <div class="reveal grid md:grid-cols-[1.2fr_.8fr] gap-10 items-start">
@@ -867,7 +902,11 @@ const FALLBACK = {
     linkedin_url: "https://www.linkedin.com/in/last-benchers-association-69975b34a",
     youtube_url: "https://www.youtube.com/@lastbenchersassociationngo",
     pinterest_url: "",
+    brochure_heading: "Download our brochure",
+    brochure_subtext: "Get our full company brochure — just tell us where to send it.",
+    show_brochure: "FALSE",
     show_services: "TRUE", show_portfolio: "TRUE", show_gallery: "TRUE", show_clients: "TRUE", show_testimonials: "TRUE"
+   
   },
   services: [],
   portfolio: [],
@@ -944,6 +983,13 @@ document.getElementById('about-text-2').innerHTML = sanitizeHTML(s.about_text_2)
   document.getElementById('whatsapp-float').href = 'https://wa.me/' + s.whatsapp_number + '?text=' + encodeURIComponent("Hi, I'd like to discuss a web development project");
  document.getElementById('chatbot-whatsapp-link').href = 'https://wa.me/' + s.whatsapp_number + '?text=' + encodeURIComponent("Hi, I'd like to discuss a web development project");
   document.getElementById('footer-year').textContent = new Date().getFullYear();
+   const showBrochure = String(s.show_brochure).toUpperCase() !== 'FALSE';
+  document.getElementById('brochure-trigger').style.display = showBrochure ? 'flex' : 'none';
+  if (showBrochure) {
+    document.getElementById('brochure-trigger-text').textContent = s.brochure_heading || 'Download Brochure';
+    document.getElementById('brochure-modal-heading').textContent = s.brochure_heading || 'Download our brochure';
+    document.getElementById('brochure-modal-subtext').textContent = s.brochure_subtext || '';
+  }
 
   // Services — visible only when the admin toggle is on AND at least one item exists
   const showServices = String(s.show_services).toUpperCase() !== 'FALSE' && DATA.services && DATA.services.length > 0;
@@ -1139,7 +1185,52 @@ function sendToWhatsApp(p){
     `Service: ${encodeURIComponent(p.service)}%0ADetails: ${encodeURIComponent(p.message)}`;
   window.open(`https://wa.me/${num}?text=${text}`, '_blank');
 }
+/* ═══════════════════════ BROCHURE POPUP ═══════════════════════ */
+(function initBrochure(){
+  const trigger = document.getElementById('brochure-trigger');
+  const overlay = document.getElementById('brochureOverlay');
+  const closeBtn = document.getElementById('brochureClose');
+  const form = document.getElementById('brochure-form');
+  const status = document.getElementById('br-status');
+  const btn = document.getElementById('br-submit-btn');
+  if (!trigger) return;
 
+  trigger.addEventListener('click', () => overlay.classList.add('active'));
+  closeBtn.addEventListener('click', () => overlay.classList.remove('active'));
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.classList.remove('active'); });
+
+  form.addEventListener('submit', async function(evt){
+    evt.preventDefault();
+    if (!API_URL) { status.textContent = 'Not configured yet.'; return; }
+    const payload = {
+      action: 'requestBrochure',
+      name: document.getElementById('br-name').value,
+      phone: document.getElementById('br-phone').value,
+      email: document.getElementById('br-email').value
+    };
+    btn.textContent = 'Please wait...'; btn.disabled = true;
+    try {
+      const res = await fetch(API_URL, { method: 'POST', headers: {'Content-Type':'text/plain;charset=utf-8'}, body: JSON.stringify(payload) });
+      const json = await res.json();
+      if (json && json.ok) {
+        status.textContent = '✓ Opening your brochure...';
+        status.style.color = '#0E9F86';
+        window.open(json.url, '_blank');
+        form.reset();
+        setTimeout(() => overlay.classList.remove('active'), 1200);
+      } else {
+        status.textContent = (json && json.error) || 'Something went wrong.';
+        status.style.color = '#c0392b';
+      }
+    } catch(err) {
+      status.textContent = "Couldn't connect — try again.";
+      status.style.color = '#c0392b';
+    }
+    btn.textContent = 'Get Download Link →'; btn.disabled = false;
+  });
+})();
+
+ 
 /* ═══════════════════════ UI CHROME ═══════════════════════ */
 const revealObserver = new IntersectionObserver((entries)=>{
   entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); revealObserver.unobserve(e.target);} });
